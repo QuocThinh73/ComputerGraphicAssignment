@@ -5,7 +5,7 @@ import numpy as np                  # all matrix manipulations & OpenGL args
 from itertools import cycle         # cyclic iterator to easily toggle polygon rendering modes
 from libs.transform import Trackball
 from BasicShape import Triangle, Rectangle, Pentagon, Hexagon, Circle, Elip, Trapezium, Star
-from BasicShape import Cube, Cylinder
+from BasicShape import Cube, Cylinder, Cone, TruncatedCone, Prism, Torus
 
 # ------------  Viewer class & windows management ------------------------------
 class Viewer:
@@ -149,13 +149,33 @@ def main():
     
     # Cubes
     # model = Cube("./BasicShape/color_interp.vert", "./BasicShape/color_interp.frag").setup()
-    model = Cube("./BasicShape/phong.vert", "./BasicShape/phong.frag").setup()
+    # model = Cube("./BasicShape/phong.vert", "./BasicShape/phong.frag").setup()
     # model = Cube("./BasicShape/gouraud.vert", "./BasicShape/gouraud.frag").setup()
     
     # Cylinders
     # model = Cylinder("./BasicShape/color_interp.vert", "./BasicShape/color_interp.frag").setup()
-    model = Cylinder("./BasicShape/phong.vert", "./BasicShape/phong.frag").setup()
+    # model = Cylinder("./BasicShape/phong.vert", "./BasicShape/phong.frag").setup()
     # model = Cylinder("./BasicShape/gouraud.vert", "./BasicShape/gouraud.frag").setup()
+    
+    # Cones
+    # model = Cone("./BasicShape/color_interp.vert", "./BasicShape/color_interp.frag").setup()
+    # model = Cone("./BasicShape/phong.vert", "./BasicShape/phong.frag").setup()
+    # model = Cone("./BasicShape/gouraud.vert", "./BasicShape/gouraud.frag").setup()
+    
+    # Truncated cones
+    # model = TruncatedCone("./BasicShape/color_interp.vert", "./BasicShape/color_interp.frag").setup()
+    # model = TruncatedCone("./BasicShape/phong.vert", "./BasicShape/phong.frag").setup()
+    # model = TruncatedCone("./BasicShape/gouraud.vert", "./BasicShape/gouraud.frag").setup()
+
+    # Prisms
+    # model = Prism("./BasicShape/color_interp.vert", "./BasicShape/color_interp.frag").setup()
+    # model = Prism("./BasicShape/phong.vert", "./BasicShape/phong.frag").setup()
+    # model = Prism("./BasicShape/gouraud.vert", "./BasicShape/gouraud.frag").setup()
+    
+    # Toruses
+    model = Torus("./BasicShape/color_interp.vert", "./BasicShape/color_interp.frag").setup()
+    # model = Torus("./BasicShape/phong.vert", "./BasicShape/phong.frag").setup()
+    # model = Torus("./BasicShape/gouraud.vert", "./BasicShape/gouraud.frag").setup()
 
     # add models
     viewer.add(model)

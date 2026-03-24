@@ -7,7 +7,7 @@ from libs.lighting import LightingManager
 from libs import transform as T
 
 
-class Cylinder(object):
+class Cone(object):
     def __init__(self, vert_shader, frag_shader):
         self.vert_shader = vert_shader
         self.frag_shader = frag_shader
@@ -16,17 +16,14 @@ class Cylinder(object):
         self.base_radius = 0.9
         
         # vertices
-        top_v = [[0, 0, +1]]
-        bottom_v = [[0, 0, -1]]
-        side_v = []
+        base_v = [[0, 0, -1]]
+        side_v = [[0, 0, +1]]
         # normals
-        top_n = [[0, 0, 1]]
-        bottom_n = [[0, 0, -1]]
-        side_n = []
+        base_n = [[0, 0, -1]]
+        side_n = [[0, 0, +1]]
         # colors
-        top_c = [[1.0, 0.0, 0.0]]
-        bottom_c = [[0.0, 1.0, 0.0]]
-        side_c = []
+        base_c = [[1.0, 0.0, 0.0]]
+        side_c = [[0.0, 1.0, 0.0]]
         
         for i in range(self.num_points + 1):
             angle_deg = 90 + i * (360 / self.num_points)
@@ -37,35 +34,32 @@ class Cylinder(object):
             side_nx, side_ny = x / self.base_radius, y / self.base_radius
             
             # vertices
-            top_v.append([x, y, +1])
-            bottom_v.append([x, y, -1])
-            side_v.extend([[x, y, 1], [x, y, -1]])
+            base_v.append([x, y, -1])
+            side_v.append([x, y, -1])
             # normals
-            top_n.append([0, 0, 1])
-            bottom_n.append([0, 0, -1])
-            side_n.extend([[side_nx, side_ny, 0], [side_nx, side_ny, 0]])
+            base_n.append([0, 0, -1])
+            side_n.append([side_nx, side_ny, 0])
             # colors
-            top_c.append([0.0, 0.0, 1.0])
-            bottom_c.append([1.0, 1.0, 0.0])
-            side_c.extend([[0.0, 1.0, 1.0], [1.0, 0.0, 1.0]])
+            base_c.append([0.0, 0.0, 1.0])
+            side_c.append([0.0, 1.0, 1.0])
         
         self.vertices = np.array(
-            top_v + bottom_v + side_v,
+            base_v + side_v,
             dtype=np.float32
         )
         
         normals = np.array(
-            top_n + bottom_n + side_n, 
+            base_n + side_n, 
             dtype=np.float32
         )
         self.normals = normals / np.linalg.norm(normals, axis=1, keepdims=True)
         
         self.colors = np.array(
-            top_c + bottom_c + side_c,
+            base_c + side_c,
             dtype=np.float32
         )
         
-        self.num_base_vertices = len(top_v)
+        self.num_base_vertices = len(base_v)
         self.num_side_vertices = len(side_v)
 
         self.vao = VAO()
@@ -99,11 +93,9 @@ class Cylinder(object):
         
         self.vao.activate()
         
-        # top
+        # base
         GL.glDrawArrays(GL.GL_TRIANGLE_FAN, 0, self.num_base_vertices)
-        # bottom
-        GL.glDrawArrays(GL.GL_TRIANGLE_FAN, self.num_base_vertices, self.num_base_vertices)
         # side
-        GL.glDrawArrays(GL.GL_TRIANGLE_STRIP, self.num_base_vertices * 2, self.num_side_vertices)
+        GL.glDrawArrays(GL.GL_TRIANGLE_FAN, self.num_base_vertices, self.num_side_vertices)
         
         self.vao.deactivate()

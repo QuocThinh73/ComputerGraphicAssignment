@@ -7,13 +7,14 @@ from libs.lighting import LightingManager
 from libs import transform as T
 
 
-class Cylinder(object):
+class TruncatedCone(object):
     def __init__(self, vert_shader, frag_shader):
         self.vert_shader = vert_shader
         self.frag_shader = frag_shader
         
         self.num_points = 180
-        self.base_radius = 0.9
+        self.top_radius = 0.75
+        self.bottom_radius = 1.5
         
         # vertices
         top_v = [[0, 0, +1]]
@@ -31,15 +32,19 @@ class Cylinder(object):
         for i in range(self.num_points + 1):
             angle_deg = 90 + i * (360 / self.num_points)
             angle_rad = np.radians(angle_deg)
-            x = self.base_radius * np.cos(angle_rad)
-            y = self.base_radius * np.sin(angle_rad)
+            top_x = self.top_radius * np.cos(angle_rad)
+            top_y = self.top_radius * np.sin(angle_rad)
+            bottom_x = self.bottom_radius * np.cos(angle_rad)
+            bottom_y = self.bottom_radius * np.sin(angle_rad)
             
-            side_nx, side_ny = x / self.base_radius, y / self.base_radius
+            side_nx, side_ny = top_x / self.top_radius, top_y / self.top_radius
             
             # vertices
-            top_v.append([x, y, +1])
-            bottom_v.append([x, y, -1])
-            side_v.extend([[x, y, 1], [x, y, -1]])
+            top_vertice = [top_x, top_y, +1]
+            bottom_vertice = [bottom_x, bottom_y, -1]
+            top_v.append(top_vertice)
+            bottom_v.append(bottom_vertice)
+            side_v.extend([top_vertice, bottom_vertice])
             # normals
             top_n.append([0, 0, 1])
             bottom_n.append([0, 0, -1])

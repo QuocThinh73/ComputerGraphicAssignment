@@ -11,3 +11,7 @@ from .star import Star
 # 3D
 from .cube import Cube
 from .cylinder import Cylinder
+from .cone import Cone
+from .truncated_cone import TruncatedCone
+from .prism import Prism
+from .torus import Torus
