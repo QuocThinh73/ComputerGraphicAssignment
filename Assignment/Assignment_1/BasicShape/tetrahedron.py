@@ -1,52 +1,39 @@
+import OpenGL.GL as GL              # standard Python OpenGL wrapper
 import numpy as np
-import OpenGL.GL as GL
 
 from libs.shader import *
 from libs.buffer import *
 from libs.lighting import LightingManager
+from libs import transform as T
 
 
-class Cube(object):
+class Tetrahedron:
     def __init__(self, vert_shader, frag_shader):
         self.vert_shader = vert_shader
         self.frag_shader = frag_shader
         
-        self.vertices = np.array(
-            [
-                [-1, -1, +1],  # A <= Bottom: ABCD
-                [+1, -1, +1],  # B
-                [+1, -1, -1],  # C
-                [-1, -1, -1],  # D
-                [-1, +1, +1],  # E <= Top: EFGH
-                [+1, +1, +1],  # F
-                [+1, +1, -1],  # G
-                [-1, +1, -1],  # H
-            ],
-            dtype=np.float32
-        )
-
+        self.vertices = np.array([
+            [+1, +1, +1], # A
+            [+1, -1, -1], # B
+            [-1, +1, -1], # C
+            [-1, -1, +1], # D
+        ], dtype=np.float32) # numpy: have to specify float32
+        
         self.indices = np.array(
-            [0, 4, 1, 5, 2, 6, 3, 7, 0, 4, 4, 0, 0, 3, 1, 2, 2, 4, 4, 7, 5, 6],
+            [0, 1, 2, 3, 0, 1], 
             dtype=np.int32
         )
+        
+        normals = np.random.normal(0, 3, (4, 3)).astype(np.float32)
+        normals[:, 2] = np.abs(normals[:, 2])
+        self.normals = normals / np.linalg.norm(normals, axis=1, keepdims=True)
 
-        self.normals = self.vertices.copy()
-        self.normals = self.normals / np.linalg.norm(self.normals, axis=1, keepdims=True)
-
-        # colors: RGB format
-        self.colors = np.array(
-            [  # R    G    B
-                [1.0, 0.0, 0.0],  # A <= Bottom: ABCD
-                [1.0, 0.0, 1.0],  # B
-                [0.0, 0.0, 1.0],  # C
-                [0.0, 0.0, 0.0],  # D
-                [1.0, 1.0, 0.0],  # E <= Top: EFGH
-                [1.0, 1.0, 1.0],  # F
-                [0.0, 1.0, 1.0],  # G
-                [0.0, 1.0, 0.0],  # H
-            ],
-            dtype=np.float32
-        )
+        self.colors = np.array([
+            [1.0, 0.0, 0.0], # vertex A
+            [0.0, 1.0, 0.0], # vertex B
+            [0.0, 0.0, 1.0], # vertex C
+            [1.0, 0.0, 1.0], # vertex D
+        ], dtype=np.float32)
 
         self.vao = VAO()
 
@@ -54,9 +41,6 @@ class Cube(object):
         self.uma = UManager(self.shader)
         self.lighting = LightingManager(self.uma)
 
-    """
-    Create object -> call setup -> call draw
-    """
     def setup(self):
         # setup VAO for drawing cube
         self.vao.add_vbo(0, self.vertices, ncomponents=3, stride=0, offset=None)

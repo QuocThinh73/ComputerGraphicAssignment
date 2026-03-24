@@ -15,3 +15,7 @@ from .cone import Cone
 from .truncated_cone import TruncatedCone
 from .prism import Prism
 from .torus import Torus
+from .tetrahedron import Tetrahedron
+
+# Function graph
+from .function_graph import FunctionGraph

@@ -74,7 +74,7 @@ class Prism(object):
         if 'gouraud' in self.vert_shader.lower() or 'phong' in self.vert_shader.lower():
             self.vao.add_vbo(2, self.normals, ncomponents=3, stride=0, offset=None)
 
-        # setup EBO for drawing cube
+        # setup EBO
         self.vao.add_ebo(self.indices)
 
         return self

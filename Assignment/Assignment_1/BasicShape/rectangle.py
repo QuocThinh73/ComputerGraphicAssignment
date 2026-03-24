@@ -43,36 +43,25 @@ class Rectangle:
         self.lighting = LightingManager(self.uma)
 
     def setup(self):
-        self.vao.add_vbo(0, # index of the attribute in shader
-                         self.vertices, # variable in python program
-                         ncomponents=3, # x,y,x
-                         dtype=GL.GL_FLOAT, # type GL_FLOAT = float32 in numpy (careful)
-                         normalized=False,  # normalize vector or not (when normal)
-                         stride=0,
-                         offset=None)
-        self.vao.add_vbo(1, self.colors, ncomponents=3, dtype=GL.GL_FLOAT, normalized=False, stride=0, offset=None)
-        self.vao.add_vbo(2, self.normals, ncomponents=3, dtype=GL.GL_FLOAT, normalized=False, stride=0, offset=None)
+        # setup VAO for drawing cube
+        self.vao.add_vbo(0, self.vertices, ncomponents=3, stride=0, offset=None)
+        self.vao.add_vbo(1, self.colors, ncomponents=3, stride=0, offset=None)
+        
+        # Add normals for Gouraud/Phong shading (if shader needs it)
+        if 'gouraud' in self.vert_shader.lower() or 'phong' in self.vert_shader.lower():
+            self.vao.add_vbo(2, self.normals, ncomponents=3, stride=0, offset=None)
 
-        GL.glUseProgram(self.shader.render_idx)
-        projection = T.ortho(-1, 1, -1, 1, -1, 1)
-        modelview = np.identity(4, 'f')
-        self.uma.upload_uniform_matrix4fv(projection, 'projection', True)
-        self.uma.upload_uniform_matrix4fv(modelview, 'modelview', True)
-
-        # Detect shader type and setup lighting accordingly
-        if 'gouraud' in self.vert_shader.lower():
-            # Gouraud shading computes lighting in vertex shader
-            self.lighting.setup_gouraud()
-        elif 'phong' in self.vert_shader.lower():
-            # Phong shading computes lighting in fragment shader
-            self.lighting.setup_phong(mode=1)
-            
+        # setup EBO
         self.vao.add_ebo(self.indices)
-            
+
         return self
 
     def draw(self, projection, view, model):
         GL.glUseProgram(self.shader.render_idx)
+        modelview = view
+
+        self.uma.upload_uniform_matrix4fv(projection, 'projection', True)
+        self.uma.upload_uniform_matrix4fv(modelview, 'modelview', True)
         
         self.vao.activate()
         

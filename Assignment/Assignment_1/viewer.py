@@ -5,7 +5,8 @@ import numpy as np                  # all matrix manipulations & OpenGL args
 from itertools import cycle         # cyclic iterator to easily toggle polygon rendering modes
 from libs.transform import Trackball
 from BasicShape import Triangle, Rectangle, Pentagon, Hexagon, Circle, Elip, Trapezium, Star
-from BasicShape import Cube, Cylinder, Cone, TruncatedCone, Prism, Torus
+from BasicShape import Cube, Cylinder, Cone, TruncatedCone, Prism, Torus, Tetrahedron
+from BasicShape import FunctionGraph
 
 # ------------  Viewer class & windows management ------------------------------
 class Viewer:
@@ -173,9 +174,17 @@ def main():
     # model = Prism("./BasicShape/gouraud.vert", "./BasicShape/gouraud.frag").setup()
     
     # Toruses
-    model = Torus("./BasicShape/color_interp.vert", "./BasicShape/color_interp.frag").setup()
+    # model = Torus("./BasicShape/color_interp.vert", "./BasicShape/color_interp.frag").setup()
     # model = Torus("./BasicShape/phong.vert", "./BasicShape/phong.frag").setup()
     # model = Torus("./BasicShape/gouraud.vert", "./BasicShape/gouraud.frag").setup()
+    
+    # Tetrahedrons
+    # model = Tetrahedron("./BasicShape/color_interp.vert", "./BasicShape/color_interp.frag").setup()
+    # model = Tetrahedron("./BasicShape/phong.vert", "./BasicShape/phong.frag").setup()
+    # model = Tetrahedron("./BasicShape/gouraud.vert", "./BasicShape/gouraud.frag").setup()
+    
+    # Function graph
+    model = FunctionGraph("./BasicShape/color_interp.vert", "./BasicShape/color_interp.frag").setup()
 
     # add models
     viewer.add(model)
