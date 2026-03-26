@@ -174,7 +174,7 @@ def main():
     # model = Prism("./BasicShape/gouraud.vert", "./BasicShape/gouraud.frag").setup()
     
     # Toruses
-    # model = Torus("./BasicShape/color_interp.vert", "./BasicShape/color_interp.frag").setup()
+    model = Torus("./BasicShape/color_interp.vert", "./BasicShape/color_interp.frag").setup()
     # model = Torus("./BasicShape/phong.vert", "./BasicShape/phong.frag").setup()
     # model = Torus("./BasicShape/gouraud.vert", "./BasicShape/gouraud.frag").setup()
     
@@ -184,7 +184,7 @@ def main():
     # model = Tetrahedron("./BasicShape/gouraud.vert", "./BasicShape/gouraud.frag").setup()
     
     # Function graph
-    model = FunctionGraph("./BasicShape/color_interp.vert", "./BasicShape/color_interp.frag").setup()
+    # model = FunctionGraph("./BasicShape/color_interp.vert", "./BasicShape/color_interp.frag").setup()
 
     # add models
     viewer.add(model)

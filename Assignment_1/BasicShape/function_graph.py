@@ -30,7 +30,7 @@ class FunctionGraph:
             for y in y_vals:
                 z = np.sin(x) + np.cos(y)
                 vertices.append([x, y, z])
-                colors.append([(x_color_vals + y_color_vals) /2] * 3)
+                colors.append([(x_color_vals + y_color_vals) / 2] * 3)
                 
         self.vertices = np.array(
             vertices,
