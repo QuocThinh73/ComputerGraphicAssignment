@@ -18,7 +18,4 @@ class ViewerUI:
             self.state.shape_index = new_shape_index
             self.state.need_rebuild_model = True
 
-        imgui.text(f"Current Shape: {self.state.current_shape_name}")
-        imgui.text(f"Shader: {self.state.shader_name}")
-
         imgui.end()
