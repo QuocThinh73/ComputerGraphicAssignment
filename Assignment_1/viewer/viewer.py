@@ -67,15 +67,14 @@ class Viewer:
 
     def _init_imgui(self):
         imgui.create_context()
-        self.imgui_renderer = GlfwRenderer(self.win)
+        self.imgui_renderer = GlfwRenderer(self.win, attach_callbacks=False)
 
     def _init_app(self):
         self.scene = Scene(self.state)
         self.ui = ViewerUI(self.state)
 
     def on_key(self, win, key, scancode, action, mods):
-        if self.imgui_renderer is not None:
-            self.imgui_renderer.keyboard_callback(win, key, scancode, action, mods)
+        self.imgui_renderer.keyboard_callback(win, key, scancode, action, mods)
 
         io = imgui.get_io()
         if io.want_capture_keyboard:
@@ -86,8 +85,11 @@ class Viewer:
                 glfw.set_window_should_close(self.win, True)
 
     def on_mouse_move(self, win, xpos, ypos):
+        self.imgui_renderer.mouse_callback(win, xpos, ypos)
+
         io = imgui.get_io()
         if io.want_capture_mouse:
+            self.mouse = (xpos, glfw.get_window_size(win)[1] - ypos)
             return
 
         old = self.mouse
@@ -100,6 +102,8 @@ class Viewer:
             self.trackball.pan(old, self.mouse)
 
     def on_scroll(self, win, dx, dy):
+        self.imgui_renderer.scroll_callback(win, dx, dy)
+
         io = imgui.get_io()
         if io.want_capture_mouse:
             return
