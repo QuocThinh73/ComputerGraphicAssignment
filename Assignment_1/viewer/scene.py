@@ -10,7 +10,8 @@ class Scene:
     def rebuild_model(self):
         self.model = build_shape(
             self.state.current_shape_name,
-            self.state.shader_name
+            self.state.shader_name,
+            self.state
         )
         self.state.need_rebuild_model = False
 

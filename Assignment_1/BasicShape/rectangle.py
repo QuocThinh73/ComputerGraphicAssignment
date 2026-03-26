@@ -8,16 +8,14 @@ from libs import transform as T
 
 
 class Rectangle:
-    def __init__(self, vert_shader, frag_shader):
+    def __init__(self, vert_shader, frag_shader, width=2.0, height=1.0):
         self.vert_shader = vert_shader
         self.frag_shader = frag_shader
         
-        self.vertices = np.array([
-            [-1,  0, 0], # A
-            [+1,  0, 0], # B
-            [-1, +1, 0], # C
-            [+1, +1, 0], # D
-        ], dtype=np.float32) # numpy: have to specify float32
+        self.width = width
+        self.height = height
+        
+        self.vertices = self._build_vertices(width, height)
         
         self.indices = np.array(
             [0, 1, 2, 3],
@@ -41,6 +39,17 @@ class Rectangle:
         self.shader = Shader(vert_shader, frag_shader)
         self.uma = UManager(self.shader)
         self.lighting = LightingManager(self.uma)
+        
+    def _build_vertices(self, width, height):
+        w = width / 2.0
+        h = height / 2.0
+        
+        return np.array([
+            [-w, -h, 0.0],   # A
+            [+w, -h, 0.0],   # B
+            [-w, +h, 0.0],   # C
+            [+w, +h, 0.0],   # D
+        ], dtype=np.float32)
 
     def setup(self):
         # setup VAO for drawing cube

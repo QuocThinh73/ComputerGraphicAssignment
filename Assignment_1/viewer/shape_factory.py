@@ -30,26 +30,26 @@ SHAPE_CLASSES = {
 
 
 SHADER_FILES = {
-    "color_interp": (
+    "ColorInterp": (
         str(BASICSHAPE_DIR / "color_interp.vert"),
         str(BASICSHAPE_DIR / "color_interp.frag"),
     ),
-    # "flat": (
+    # "Flat": (
     #     str(BASICSHAPE_DIR / "flat.vert"),
     #     str(BASICSHAPE_DIR / "flat.frag"),
     # ),
-    # "gouraud": (
+    # "Gouraud": (
     #     str(BASICSHAPE_DIR / "gouraud.vert"),
     #     str(BASICSHAPE_DIR / "gouraud.frag"),
     # ),
-    # "phong": (
+    # "Phong": (
     #     str(BASICSHAPE_DIR / "phong.vert"),
     #     str(BASICSHAPE_DIR / "phong.frag"),
     # ),
 }
 
 
-def build_shape(shape_name: str, shader_name: str):
+def build_shape(shape_name: str, shader_name: str, state=None):
     if shape_name not in SHAPE_CLASSES:
         raise ValueError(f"Unknown shape: {shape_name}")
 
@@ -59,5 +59,14 @@ def build_shape(shape_name: str, shader_name: str):
     shape_cls = SHAPE_CLASSES[shape_name]
     vert_path, frag_path = SHADER_FILES[shader_name]
 
-    model = shape_cls(vert_path, frag_path).setup()
+    if shape_name == "Rectangle":
+        model = shape_cls(
+            vert_path,
+            frag_path,
+            width=state.rectangle_width,
+            height=state.rectangle_height
+        ).setup()
+    else:
+        model = shape_cls(vert_path, frag_path).setup()
+
     return model
