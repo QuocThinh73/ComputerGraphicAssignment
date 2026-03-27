@@ -7,13 +7,27 @@ SHADERS_DIR = BASE_DIR / "shaders"
 
 
 SHAPE_CLASSES = {
+    # 2D
+    "Triangle": TriangleModel,
     "Rectangle": RectangleModel,
+    "Trapezium": TrapeziumModel,
+    "Pentagon": PentagonModel,
+    "Hexagon": HexagonModel,
     "Circle": CircleModel,
-    "Cube": CubeModel,
     "Elip": ElipModel,
+    "Star": StarModel,
+    "Arrow": ArrowModel,
+    # 3D
+    "Cube": CubeModel,
     "Cone": ConeModel,
     "TruncatedCone": TruncatedConeModel,
     "Cylinder": CylinderModel,
+    "Tetrahedron": TetrahedronModel,
+    "Torus": TorusModel,
+    "Prism": PrismModel,
+    "Sphere1": Sphere1Model,
+    "Sphere2": Sphere2Model,
+    "Sphere3": Sphere3Model
 }
 
 

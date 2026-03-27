@@ -22,7 +22,7 @@ class TruncatedConeModel(BaseModel):
         ]
         
         for i in range(self.num_points + 1):
-            angle = np.radians(i * (360 / self.num_points))
+            angle = i * (2.0 * np.pi / self.num_points)
             bottom_x = self.bottom_radius * np.cos(angle)
             bottom_z = self.bottom_radius * np.sin(angle)
             top_x = self.top_radius * np.cos(angle)
@@ -36,13 +36,13 @@ class TruncatedConeModel(BaseModel):
         side_vertices = []
         
         for i in range(self.num_points):
-            angle1 = np.radians(i * (360 / self.num_points))
+            angle1 = i * (2.0 * np.pi / self.num_points)
             bottom_x1 = self.bottom_radius * np.cos(angle1)
             bottom_z1 = self.bottom_radius * np.sin(angle1)
             top_x1 = self.top_radius * np.cos(angle1)
             top_z1 = self.top_radius * np.sin(angle1)
             
-            angle2 = np.radians((i + 1) * (360 / self.num_points))
+            angle2 = (i + 1) * (2.0 * np.pi / self.num_points)
             bottom_x2 = self.bottom_radius * np.cos(angle2)
             bottom_z2 = self.bottom_radius * np.sin(angle2)
             top_x2 = self.top_radius * np.cos(angle2)
@@ -74,7 +74,7 @@ class TruncatedConeModel(BaseModel):
         ]
         
         for i in range(self.num_points + 1):
-            angle = np.radians(i * (360 / self.num_points))
+            angle = i * (2.0 * np.pi / self.num_points)
             
             r = np.cos(angle)
             g = np.sin(angle)
@@ -86,13 +86,13 @@ class TruncatedConeModel(BaseModel):
         side_colors = []
         
         for i in range(self.num_points):
-            angle1 = np.radians(i * (360 / self.num_points))
+            angle1 = i * (2.0 * np.pi / self.num_points)
             r1 = np.cos(angle1)
             g1 = np.sin(angle1)
             b1 = 0.5 + 0.5 * np.cos(angle1)
             color1 = [r1, g1, b1]
             
-            angle2 = np.radians((i + 1) * (360 / self.num_points))
+            angle2 = (i + 1) * (2.0 * np.pi / self.num_points)
             r2 = np.cos(angle2)
             g2 = np.sin(angle2)
             b2 = 0.5 + 0.5 * np.cos(angle2)

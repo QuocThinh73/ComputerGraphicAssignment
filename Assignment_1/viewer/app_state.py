@@ -4,13 +4,27 @@ from states import *
 class AppState:
     def __init__(self):
         self.states = {
+            # 2D
+            "Triangle": TriangleState(),
             "Rectangle": RectangleState(),
-            "Cube": CubeState(),
+            "Trapezium": TrapeziumState(),
+            "Pentagon": PentagonState(),
+            "Hexagon": HexagonState(),
             "Circle": CircleState(),
             "Elip": ElipState(),
+            "Star": StarState(),
+            "Arrow": ArrowState(),
+            # 3D
+            "Cube": CubeState(),
             "Cone": ConeState(),
             "TruncatedCone": TruncatedConeState(),
             "Cylinder": CylinderState(),
+            "Tetrahedron": TetrahedronState(),
+            "Torus": TorusState(),
+            "Prism": PrismState(),
+            "Sphere1": Sphere1State(),
+            "Sphere2": Sphere2State(),
+            "Sphere3": Sphere3State(),
         }
         
         self.shader_names = [

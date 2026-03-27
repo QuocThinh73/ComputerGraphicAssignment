@@ -21,7 +21,7 @@ class ConeModel(BaseModel):
         ]
         
         for i in range(self.num_points + 1):
-            angle = np.radians(i * (360 / self.num_points))
+            angle = i * (2.0 * np.pi / self.num_points)
             x = self.radius * np.cos(angle)
             z = self.radius * np.sin(angle)
             
@@ -42,7 +42,7 @@ class ConeModel(BaseModel):
         ]
         
         for i in range(self.num_points + 1):
-            angle = np.radians(i * (360 / self.num_points))
+            angle = i * (2.0 * np.pi / self.num_points)
             
             r = np.cos(angle)
             g = np.sin(angle)

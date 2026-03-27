@@ -1,8 +1,9 @@
-from ..base_state import ObjectState, Parameter
+from ..base_state import ObjectState, FloatParam
+
 
 class CircleState(ObjectState):
     def __init__(self):
         super().__init__("Circle")
         self.params = {
-            "radius": Parameter("Radius", 1.0),
+            "radius": FloatParam("Radius", 0.5),
         }

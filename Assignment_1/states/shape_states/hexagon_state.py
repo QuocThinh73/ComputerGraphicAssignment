@@ -1,10 +1,9 @@
 from ..base_state import ObjectState, FloatParam
 
 
-class ConeState(ObjectState):
+class HexagonState(ObjectState):
     def __init__(self):
-        super().__init__("Cone")
+        super().__init__("Hexagon")
         self.params = {
             "radius": FloatParam("Radius", 0.5),
-            "height": FloatParam("Height", 1.0),
         }

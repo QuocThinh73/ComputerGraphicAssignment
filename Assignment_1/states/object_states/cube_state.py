@@ -1,10 +1,11 @@
-from ..base_state import ObjectState, Parameter
+from ..base_state import ObjectState, FloatParam
+
 
 class CubeState(ObjectState):
     def __init__(self):
         super().__init__("Cube")
         self.params = {
-            "width": Parameter("Width", 1.0),
-            "height": Parameter("Height", 1.0),
-            "depth": Parameter("Depth", 1.0),
+            "width": FloatParam("Width", 1.0),
+            "height": FloatParam("Height", 1.0),
+            "depth": FloatParam("Depth", 1.0),
         }
