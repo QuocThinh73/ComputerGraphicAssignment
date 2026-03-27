@@ -7,42 +7,36 @@ from libs.lighting import LightingManager
 from libs import transform as T
 
 
-class Tetrahedron:
+class BaseModel:
     def __init__(self, vert_shader, frag_shader):
         self.vert_shader = vert_shader
         self.frag_shader = frag_shader
         
-        self.vertices = np.array([
-            [+1, +1, +1], # A
-            [+1, -1, -1], # B
-            [-1, +1, -1], # C
-            [-1, -1, +1], # D
-        ], dtype=np.float32) # numpy: have to specify float32
-        
-        self.indices = np.array(
-            [0, 1, 2, 3, 0, 1], 
-            dtype=np.int32
-        )
-        
-        normals = np.random.normal(0, 3, (4, 3)).astype(np.float32)
-        normals[:, 2] = np.abs(normals[:, 2])
-        self.normals = normals / np.linalg.norm(normals, axis=1, keepdims=True)
-
-        self.colors = np.array([
-            [1.0, 0.0, 0.0], # vertex A
-            [0.0, 1.0, 0.0], # vertex B
-            [0.0, 0.0, 1.0], # vertex C
-            [1.0, 0.0, 1.0], # vertex D
-        ], dtype=np.float32)
+        self._build_vertices()
+        self._build_indices()
+        self._build_normals()
+        self._build_colors()
 
         self.vao = VAO()
 
         self.shader = Shader(vert_shader, frag_shader)
         self.uma = UManager(self.shader)
         self.lighting = LightingManager(self.uma)
+        
+    def _build_vertices(self): 
+        self.vertices = None
+
+    def _build_indices(self): 
+        self.indices = None
+
+    def _build_normals(self):
+        self.normals = None
+
+    def _build_colors(self):
+        self.colors = None
 
     def setup(self):
-        # setup VAO for drawing cube
+        # setup VAO
         self.vao.add_vbo(0, self.vertices, ncomponents=3, stride=0, offset=None)
         self.vao.add_vbo(1, self.colors, ncomponents=3, stride=0, offset=None)
         
@@ -62,11 +56,15 @@ class Tetrahedron:
         self.uma.upload_uniform_matrix4fv(projection, 'projection', True)
         self.uma.upload_uniform_matrix4fv(modelview, 'modelview', True)
         
-        # Setup lighting if using Gouraud or Phong shader
         if 'gouraud' in self.vert_shader.lower():
             self.lighting.setup_gouraud()
         elif 'phong' in self.vert_shader.lower():
             self.lighting.setup_phong(mode=1)
-
+        
         self.vao.activate()
-        GL.glDrawElements(GL.GL_TRIANGLE_STRIP, self.indices.shape[0], GL.GL_UNSIGNED_INT, None)
+        
+        self._draw_model()
+        
+        self.vao.deactivate()
+        
+    def _draw_model(self): raise NotImplementedError

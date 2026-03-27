@@ -1,0 +1,29 @@
+from ..base_state import ObjectState, FloatParam, IntParam
+
+
+class Sphere1State(ObjectState):
+    def __init__(self):
+        super().__init__("UVSphere")
+        self.params = {
+            "radius": FloatParam("Radius", 0.5),
+            "sectors": IntParam("Sectors", 36),
+            "stacks": IntParam("Stacks", 18),
+        }
+
+
+class Sphere2State(ObjectState):
+    def __init__(self):
+        super().__init__("CubedSphere")
+        self.params = {
+            "radius": FloatParam("Radius", 0.5),
+            "segments": IntParam("Segments", 10),
+        }
+
+
+class Sphere3State(ObjectState):
+    def __init__(self):
+        super().__init__("TetraSphere")
+        self.params = {
+            "radius": FloatParam("Radius", 0.5),
+            "subdivisions": IntParam("Subdivisions", 3, min_val=0, max_val=10),
+        }

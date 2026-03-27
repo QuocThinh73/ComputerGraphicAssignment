@@ -1,55 +1,30 @@
-class Parameter:
-    def __init__(self, label, value, min_val=0.1, max_val=10.0):
-        self.label = label
-        self.value = value
-        self.min_val = min_val
-        self.max_val = max_val
-        
-        
-class RectangleState:
-    def __init__(self):
-        self.name = "Rectangle"
-        self.params = {
-            "width": Parameter("Width", 1.0),
-            "height": Parameter("Height", 0.5),
-        }
-        
-    def get_params_values(self):
-        return {key: param.value for key, param in self.params.items()}
-    
-    
-class CubeState:
-    def __init__(self):
-        self.name = "Cube"
-        self.params = {
-            "width": Parameter("Width", 1.0),
-            "height": Parameter("Height", 1.0),
-            "depth": Parameter("Depths", 1.0),
-        }
-        
-    def get_params_values(self):
-        return {key: param.value for key, param in self.params.items()}
-    
+from states import *
+
 
 class AppState:
     def __init__(self):
         self.states = {
-            # "Triangle": TriangleState(),
+            # 2D
+            "Triangle": TriangleState(),
             "Rectangle": RectangleState(),
-            # "Pentagon",
-            # "Hexagon",
-            # "Circle",
-            # "Elip",
-            # "Trapezium",
-            # "Star",
+            "Trapezium": TrapeziumState(),
+            "Pentagon": PentagonState(),
+            "Hexagon": HexagonState(),
+            "Circle": CircleState(),
+            "Elip": ElipState(),
+            "Star": StarState(),
+            "Arrow": ArrowState(),
+            # 3D
             "Cube": CubeState(),
-            # "Cylinder",
-            # "Cone",
-            # "TruncatedCone",
-            # "Prism",
-            # "Torus",
-            # "Tetrahedron",
-            # "FunctionGraph",
+            "Cone": ConeState(),
+            "TruncatedCone": TruncatedConeState(),
+            "Cylinder": CylinderState(),
+            "Tetrahedron": TetrahedronState(),
+            "Torus": TorusState(),
+            "Prism": PrismState(),
+            "Sphere1": Sphere1State(),
+            "Sphere2": Sphere2State(),
+            "Sphere3": Sphere3State(),
         }
         
         self.shader_names = [

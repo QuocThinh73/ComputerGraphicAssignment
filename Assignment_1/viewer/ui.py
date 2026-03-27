@@ -1,4 +1,5 @@
 import imgui
+from states.base_state import FloatParam, IntParam
 
 
 class ViewerUI:
@@ -24,12 +25,18 @@ class ViewerUI:
         imgui.text(f"{current_shape.name} Parameters")
         
         for param_id, param in current_shape.params.items():
-            changed_p, new_val = imgui.slider_float(
-                param.label,
-                param.value,
-                param.min_val,
-                param.max_val
-            )
+            changed_p = False
+            new_val = param.value
+            
+            if isinstance(param, FloatParam):
+                changed_p, new_val = imgui.slider_float(
+                    param.label, param.value, param.min_val, param.max_val
+                )
+            elif isinstance(param, IntParam):
+                changed_p, new_val = imgui.slider_int(
+                    param.label, param.value, param.min_val, param.max_val
+                )
+
             if changed_p:
                 param.value = new_val
                 self.state.need_rebuild_model = True

@@ -1,51 +1,53 @@
 from pathlib import Path
 
-from BasicShape import Triangle, Rectangle, Pentagon, Hexagon, Circle, Elip, Trapezium, Star
-from BasicShape import Cube, Cylinder, Cone, TruncatedCone, Prism, Torus, Tetrahedron
-from BasicShape import FunctionGraph
-
+from models import *
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-BASICSHAPE_DIR = BASE_DIR / "BasicShape"
+SHADERS_DIR = BASE_DIR / "shaders"
 
 
 SHAPE_CLASSES = {
-    "Triangle": Triangle,
-    "Rectangle": Rectangle,
-    "Pentagon": Pentagon,
-    "Hexagon": Hexagon,
-    "Circle": Circle,
-    "Elip": Elip,
-    "Trapezium": Trapezium,
-    "Star": Star,
-    "Cube": Cube,
-    "Cylinder": Cylinder,
-    "Cone": Cone,
-    "TruncatedCone": TruncatedCone,
-    "Prism": Prism,
-    "Torus": Torus,
-    "Tetrahedron": Tetrahedron,
-    "FunctionGraph": FunctionGraph,
+    # 2D
+    "Triangle": TriangleModel,
+    "Rectangle": RectangleModel,
+    "Trapezium": TrapeziumModel,
+    "Pentagon": PentagonModel,
+    "Hexagon": HexagonModel,
+    "Circle": CircleModel,
+    "Elip": ElipModel,
+    "Star": StarModel,
+    "Arrow": ArrowModel,
+    # 3D
+    "Cube": CubeModel,
+    "Cone": ConeModel,
+    "TruncatedCone": TruncatedConeModel,
+    "Cylinder": CylinderModel,
+    "Tetrahedron": TetrahedronModel,
+    "Torus": TorusModel,
+    "Prism": PrismModel,
+    "Sphere1": Sphere1Model,
+    "Sphere2": Sphere2Model,
+    "Sphere3": Sphere3Model
 }
 
 
 SHADER_FILES = {
     "ColorInterp": (
-        str(BASICSHAPE_DIR / "color_interp.vert"),
-        str(BASICSHAPE_DIR / "color_interp.frag"),
+        str(SHADERS_DIR / "color_interp.vert"),
+        str(SHADERS_DIR / "color_interp.frag"),
     ),
-    # "Flat": (
-    #     str(BASICSHAPE_DIR / "flat.vert"),
-    #     str(BASICSHAPE_DIR / "flat.frag"),
-    # ),
-    # "Gouraud": (
-    #     str(BASICSHAPE_DIR / "gouraud.vert"),
-    #     str(BASICSHAPE_DIR / "gouraud.frag"),
-    # ),
-    # "Phong": (
-    #     str(BASICSHAPE_DIR / "phong.vert"),
-    #     str(BASICSHAPE_DIR / "phong.frag"),
-    # ),
+    "Flat": (
+        str(SHADERS_DIR / "flat.vert"),
+        str(SHADERS_DIR / "flat.frag"),
+    ),
+    "Gouraud": (
+        str(SHADERS_DIR / "gouraud.vert"),
+        str(SHADERS_DIR / "gouraud.frag"),
+    ),
+    "Phong": (
+        str(SHADERS_DIR / "phong.vert"),
+        str(SHADERS_DIR / "phong.frag"),
+    ),
 }
 
 
