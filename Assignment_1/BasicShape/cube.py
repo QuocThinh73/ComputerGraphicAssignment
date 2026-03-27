@@ -7,23 +7,15 @@ from libs.lighting import LightingManager
 
 
 class Cube(object):
-    def __init__(self, vert_shader, frag_shader):
+    def __init__(self, vert_shader, frag_shader, width, height, depth):
         self.vert_shader = vert_shader
         self.frag_shader = frag_shader
         
-        self.vertices = np.array(
-            [
-                [-1, -1, +1],  # A <= Bottom: ABCD
-                [+1, -1, +1],  # B
-                [+1, -1, -1],  # C
-                [-1, -1, -1],  # D
-                [-1, +1, +1],  # E <= Top: EFGH
-                [+1, +1, +1],  # F
-                [+1, +1, -1],  # G
-                [-1, +1, -1],  # H
-            ],
-            dtype=np.float32
-        )
+        self.width = width
+        self.height = height
+        self.depth = depth
+
+        self.vertices = self._build_vertices(self.width, self.height, self.depth)
 
         self.indices = np.array(
             [0, 4, 1, 5, 2, 6, 3, 7, 0, 4, 4, 0, 0, 3, 1, 2, 2, 4, 4, 7, 5, 6],
@@ -53,6 +45,22 @@ class Cube(object):
         self.shader = Shader(vert_shader, frag_shader)
         self.uma = UManager(self.shader)
         self.lighting = LightingManager(self.uma)
+        
+    def _build_vertices(self, width, height, depth):
+        w = width / 2.0
+        h = height / 2.0
+        d = depth / 2.0
+        
+        return np.array([
+            [-w, -h, +d],  # A
+            [+w, -h, +d],  # B
+            [+w, -h, -d],  # C
+            [-w, -h, -d],  # D
+            [-w, +h, +d],  # E
+            [+w, +h, +d],  # F
+            [+w, +h, -d],  # G
+            [-w, +h, -d],  # H
+        ], dtype=np.float32)
 
     """
     Create object -> call setup -> call draw

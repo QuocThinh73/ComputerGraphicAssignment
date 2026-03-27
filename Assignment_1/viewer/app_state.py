@@ -10,12 +10,26 @@ class RectangleState:
     def __init__(self):
         self.name = "Rectangle"
         self.params = {
-            "width": Parameter("Width", 2.0),
-            "height": Parameter("Height", 1.0),
+            "width": Parameter("Width", 1.0),
+            "height": Parameter("Height", 0.5),
         }
         
     def get_params_values(self):
         return {key: param.value for key, param in self.params.items()}
+    
+    
+class CubeState:
+    def __init__(self):
+        self.name = "Cube"
+        self.params = {
+            "width": Parameter("Width", 1.0),
+            "height": Parameter("Height", 1.0),
+            "depth": Parameter("Depths", 1.0),
+        }
+        
+    def get_params_values(self):
+        return {key: param.value for key, param in self.params.items()}
+    
 
 class AppState:
     def __init__(self):
@@ -28,7 +42,7 @@ class AppState:
             # "Elip",
             # "Trapezium",
             # "Star",
-            # "Cube",
+            "Cube": CubeState(),
             # "Cylinder",
             # "Cone",
             # "TruncatedCone",

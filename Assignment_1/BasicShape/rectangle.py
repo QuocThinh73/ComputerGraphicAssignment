@@ -8,14 +8,14 @@ from libs import transform as T
 
 
 class Rectangle:
-    def __init__(self, vert_shader, frag_shader, width=2.0, height=1.0):
+    def __init__(self, vert_shader, frag_shader, width, height):
         self.vert_shader = vert_shader
         self.frag_shader = frag_shader
         
         self.width = width
         self.height = height
         
-        self.vertices = self._build_vertices(width, height)
+        self.vertices = self._build_vertices(self.width, self.height)
         
         self.indices = np.array(
             [0, 1, 2, 3],
