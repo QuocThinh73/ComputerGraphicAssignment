@@ -49,24 +49,14 @@ SHADER_FILES = {
 }
 
 
-def build_shape(shape_name: str, shader_name: str, state=None):
-    if shape_name not in SHAPE_CLASSES:
-        raise ValueError(f"Unknown shape: {shape_name}")
-
-    if shader_name not in SHADER_FILES:
-        raise ValueError(f"Unknown shader: {shader_name}")
-
+def build_shape(shape_name: str, shader_name: str, **kwargs):
     shape_cls = SHAPE_CLASSES[shape_name]
     vert_path, frag_path = SHADER_FILES[shader_name]
 
-    if shape_name == "Rectangle":
-        model = shape_cls(
-            vert_path,
-            frag_path,
-            width=state.rectangle_width,
-            height=state.rectangle_height
-        ).setup()
-    else:
-        model = shape_cls(vert_path, frag_path).setup()
+    model = shape_cls(
+        vert_path, 
+        frag_path, 
+        **kwargs
+    ).setup()
 
     return model

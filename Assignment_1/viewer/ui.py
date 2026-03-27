@@ -18,28 +18,20 @@ class ViewerUI:
             self.state.shape_index = new_shape_index
             self.state.need_rebuild_model = True
             
-        if self.state.current_shape_name == "Rectangle":
-            imgui.separator()
-            imgui.text("Rectangle Parameters")
-            
-            changed_w, new_w = imgui.slider_float(
-                "Width",
-                self.state.rectangle_width,
-                0.1,
-                10.0
+        current_shape = self.state.current_state
+        
+        imgui.separator()
+        imgui.text(f"{current_shape.name} Parameters")
+        
+        for param_id, param in current_shape.params.items():
+            changed_p, new_val = imgui.slider_float(
+                param.label,
+                param.value,
+                param.min_val,
+                param.max_val
             )
-            if changed_w:
-                self.state.rectangle_width = new_w
-                self.state.need_rebuild_model = True
-                
-            changed_h, new_h = imgui.slider_float(
-                "Height",
-                self.state.rectangle_height,
-                0.1,
-                10.0
-            )
-            if changed_h:
-                self.state.rectangle_height = new_h
+            if changed_p:
+                param.value = new_val
                 self.state.need_rebuild_model = True
 
         imgui.end()
