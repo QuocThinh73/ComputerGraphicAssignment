@@ -2,6 +2,7 @@ import numpy as np
 import OpenGL.GL as GL
 from ..base_model import BaseModel
 
+
 class RectangleModel(BaseModel):
     def __init__(self, vert_shader, frag_shader, width, height):
         self.width = width

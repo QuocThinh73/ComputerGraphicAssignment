@@ -3,9 +3,10 @@ import OpenGL.GL as GL
 from ..base_model import BaseModel
 
 
-class CircleModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, radius):
-        self.radius = radius
+class ElipModel(BaseModel):
+    def __init__(self, vert_shader, frag_shader, width, height):
+        self.width = width
+        self.height = height
         self.num_points = 360
         super().__init__(vert_shader, frag_shader)
         
@@ -16,8 +17,8 @@ class CircleModel(BaseModel):
         
         for i in range(self.num_points):
             angle = np.radians(i * (360 / self.num_points))
-            x = self.radius * np.cos(angle)
-            y = self.radius * np.sin(angle)
+            x = self.height * np.cos(angle)
+            y = self.width * np.sin(angle)
             vertices.append([x, y, 0])
         
         self.vertices = np.array(

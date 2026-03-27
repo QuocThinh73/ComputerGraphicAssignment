@@ -1,4 +1,5 @@
-from states import RectangleState, CubeState, CircleState
+from states import *
+
 
 class AppState:
     def __init__(self):
@@ -6,6 +7,10 @@ class AppState:
             "Rectangle": RectangleState(),
             "Cube": CubeState(),
             "Circle": CircleState(),
+            "Elip": ElipState(),
+            "Cone": ConeState(),
+            "TruncatedCone": TruncatedConeState(),
+            "Cylinder": CylinderState(),
         }
         
         self.shader_names = [
