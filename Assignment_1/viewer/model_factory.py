@@ -27,7 +27,9 @@ SHAPE_CLASSES = {
     "Prism": PrismModel,
     "Sphere1": Sphere1Model,
     "Sphere2": Sphere2Model,
-    "Sphere3": Sphere3Model
+    "Sphere3": Sphere3Model,
+    # Function graph
+    "FunctionGraph": FunctionGraphModel,
 }
 
 

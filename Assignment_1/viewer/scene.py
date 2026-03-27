@@ -1,4 +1,4 @@
-from viewer.shape_factory import build_shape
+from viewer.model_factory import build_shape
 
 
 class Scene:

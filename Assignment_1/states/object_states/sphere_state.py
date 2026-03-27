@@ -1,7 +1,7 @@
-from ..base_state import ObjectState, FloatParam, IntParam
+from ..base_state import BaseState, FloatParam, IntParam
 
 
-class Sphere1State(ObjectState):
+class Sphere1State(BaseState):
     def __init__(self):
         super().__init__("UVSphere")
         self.params = {
@@ -11,7 +11,7 @@ class Sphere1State(ObjectState):
         }
 
 
-class Sphere2State(ObjectState):
+class Sphere2State(BaseState):
     def __init__(self):
         super().__init__("CubedSphere")
         self.params = {
@@ -20,7 +20,7 @@ class Sphere2State(ObjectState):
         }
 
 
-class Sphere3State(ObjectState):
+class Sphere3State(BaseState):
     def __init__(self):
         super().__init__("TetraSphere")
         self.params = {

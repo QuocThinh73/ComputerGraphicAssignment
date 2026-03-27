@@ -1,7 +1,7 @@
-from ..base_state import ObjectState, FloatParam
+from ..base_state import BaseState, FloatParam
 
 
-class ArrowState(ObjectState):
+class ArrowState(BaseState):
     def __init__(self):
         super().__init__("Arrow")
         self.params = {

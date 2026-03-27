@@ -1,7 +1,7 @@
-from ..base_state import ObjectState, FloatParam
+from ..base_state import BaseState, FloatParam
 
 
-class RectangleState(ObjectState):
+class RectangleState(BaseState):
     def __init__(self):
         super().__init__("Rectangle")
         self.params = {

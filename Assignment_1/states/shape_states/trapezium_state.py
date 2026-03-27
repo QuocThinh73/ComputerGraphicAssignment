@@ -1,7 +1,7 @@
-from ..base_state import ObjectState, FloatParam
+from ..base_state import BaseState, FloatParam
 
 
-class TrapeziumState(ObjectState):
+class TrapeziumState(BaseState):
     def __init__(self):
         super().__init__("Trapezium")
         self.params = {

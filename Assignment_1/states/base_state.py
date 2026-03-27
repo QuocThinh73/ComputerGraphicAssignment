@@ -16,7 +16,7 @@ class IntParam(Parameter):
         super().__init__(label, int(value), int(min_val), int(max_val))
 
 
-class ObjectState:
+class BaseState:
     def __init__(self, name):
         self.name = name
         self.params = {}

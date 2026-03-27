@@ -25,6 +25,8 @@ class AppState:
             "Sphere1": Sphere1State(),
             "Sphere2": Sphere2State(),
             "Sphere3": Sphere3State(),
+            # Function graph
+            "FunctionGraph": FunctionGraphState()
         }
         
         self.shader_names = [

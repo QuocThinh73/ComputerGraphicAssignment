@@ -1,7 +1,7 @@
-from ..base_state import ObjectState, FloatParam, IntParam
+from ..base_state import BaseState, FloatParam, IntParam
 
 
-class PrismState(ObjectState):
+class PrismState(BaseState):
     def __init__(self):
         super().__init__("Prism")
         self.params = {
