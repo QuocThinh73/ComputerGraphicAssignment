@@ -1,0 +1,1 @@
+from .object_models import RectangleModel, CubeModel, CircleModel

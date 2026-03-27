@@ -1,38 +1,22 @@
 from pathlib import Path
 
-from BasicShape import Triangle, Rectangle, Pentagon, Hexagon, Circle, Elip, Trapezium, Star
-from BasicShape import Cube, Cylinder, Cone, TruncatedCone, Prism, Torus, Tetrahedron
-from BasicShape import FunctionGraph
-
+from models import RectangleModel, CubeModel, CircleModel
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-BASICSHAPE_DIR = BASE_DIR / "BasicShape"
+SHADERS_DIR = BASE_DIR / "shaders"
 
 
 SHAPE_CLASSES = {
-    "Triangle": Triangle,
-    "Rectangle": Rectangle,
-    "Pentagon": Pentagon,
-    "Hexagon": Hexagon,
-    "Circle": Circle,
-    "Elip": Elip,
-    "Trapezium": Trapezium,
-    "Star": Star,
-    "Cube": Cube,
-    "Cylinder": Cylinder,
-    "Cone": Cone,
-    "TruncatedCone": TruncatedCone,
-    "Prism": Prism,
-    "Torus": Torus,
-    "Tetrahedron": Tetrahedron,
-    "FunctionGraph": FunctionGraph,
+    "Rectangle": RectangleModel,
+    "Circle": CircleModel,
+    "Cube": CubeModel,
 }
 
 
 SHADER_FILES = {
     "ColorInterp": (
-        str(BASICSHAPE_DIR / "color_interp.vert"),
-        str(BASICSHAPE_DIR / "color_interp.frag"),
+        str(SHADERS_DIR / "color_interp.vert"),
+        str(SHADERS_DIR / "color_interp.frag"),
     ),
     # "Flat": (
     #     str(BASICSHAPE_DIR / "flat.vert"),
