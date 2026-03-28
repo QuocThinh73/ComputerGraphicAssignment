@@ -4,10 +4,10 @@ import imgui
 
 from imgui.integrations.glfw import GlfwRenderer
 from libs.transform import Trackball
-
 from viewer.app_state import AppState
 from viewer.scene import Scene
 from viewer.ui import ViewerUI
+from libs.camera import Camera
 
 
 class Viewer:
@@ -48,8 +48,8 @@ class Viewer:
         glfw.set_key_callback(self.win, self.on_key)
         glfw.set_cursor_pos_callback(self.win, self.on_mouse_move)
         glfw.set_scroll_callback(self.win, self.on_scroll)
-
-        self.trackball = Trackball()
+        
+        self.trackball = Camera(yaw=0.0, pitch=30.0, distance=5.0)
 
     def _init_opengl(self):
         print(

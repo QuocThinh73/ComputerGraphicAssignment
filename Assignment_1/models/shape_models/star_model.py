@@ -4,10 +4,11 @@ from ..base_model import BaseModel
 
 
 class StarModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, short_radius, long_radius):
+    def __init__(self, vert_shader, frag_shader, short_radius, long_radius, color):
         self.short_radius = short_radius
         self.long_radius = long_radius
         self.num_points = 10
+        self.color = color
         super().__init__(vert_shader, frag_shader)
         
     def _build_vertices(self):
@@ -43,23 +44,26 @@ class StarModel(BaseModel):
         )
 
     def _build_colors(self):
-        colors = [
-            [1.0, 1.0, 1.0] # center
-        ]
-        
-        for i in range(self.num_points):
-            angle = i * (2.0 * np.pi / self.num_points)
+        if 'flat' in self.vert_shader.lower():
+            self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
+        else:
+            colors = [
+                [1.0, 1.0, 1.0] # center
+            ]
             
-            r = np.cos(angle)
-            g = np.sin(angle)
-            b = 0.5 + 0.5 * np.cos(angle)
-            
-            colors.append([r, g, b])
-            
-        self.colors = np.array(
-            colors,
-            dtype=np.float32
-        )
+            for i in range(self.num_points):
+                angle = i * (2.0 * np.pi / self.num_points)
+                
+                r = np.cos(angle)
+                g = np.sin(angle)
+                b = 0.5 + 0.5 * np.cos(angle)
+                
+                colors.append([r, g, b])
+                
+            self.colors = np.array(
+                colors,
+                dtype=np.float32
+            )
         
     def _draw_model(self):
         GL.glDrawElements(GL.GL_TRIANGLE_FAN, self.indices.shape[0], GL.GL_UNSIGNED_INT, None)

@@ -4,11 +4,11 @@ from ..base_model import BaseModel
 
 
 class PrismModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, radius, height, num_sides):
+    def __init__(self, vert_shader, frag_shader, radius, height, num_sides, color):
         self.radius = radius
         self.height = height
-        self.num_sides = max(3, int(num_sides)) 
-        
+        self.num_sides = max(3, int(num_sides))
+        self.color = color
         super().__init__(vert_shader, frag_shader)
         
     def _build_vertices(self):
@@ -51,29 +51,32 @@ class PrismModel(BaseModel):
         )
 
     def _build_colors(self):
-        bottom_colors = [[1.0, 1.0, 1.0]]
-        top_colors = [[1.0, 1.0, 1.0]]
-        side_colors = []
-        
-        for i in range(self.num_sides + 1):
-            angle = i * (2.0 * np.pi / self.num_sides)
-            c = [np.cos(angle), np.sin(angle), 0.5 + 0.5 * np.cos(angle)]
-            bottom_colors.append(c)
-            top_colors.append(c)
+        if 'flat' in self.vert_shader.lower():
+            self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
+        else:
+            bottom_colors = [[1.0, 1.0, 1.0]]
+            top_colors = [[1.0, 1.0, 1.0]]
+            side_colors = []
             
-        for i in range(self.num_sides):
-            angle = i * (2.0 * np.pi / self.num_sides)
-            r = 0.5 + 0.5 * np.cos(angle)
-            g = 0.5 + 0.5 * np.sin(angle * 2)
-            b = 0.5 + 0.5 * np.cos(angle + 1)
-            face_color = [r, g, b]
-            
-            side_colors.extend([face_color] * 6)
-            
-        self.colors = np.array(
-            bottom_colors + top_colors + side_colors,
-            dtype=np.float32
-        )
+            for i in range(self.num_sides + 1):
+                angle = i * (2.0 * np.pi / self.num_sides)
+                c = [np.cos(angle), np.sin(angle), 0.5 + 0.5 * np.cos(angle)]
+                bottom_colors.append(c)
+                top_colors.append(c)
+                
+            for i in range(self.num_sides):
+                angle = i * (2.0 * np.pi / self.num_sides)
+                r = 0.5 + 0.5 * np.cos(angle)
+                g = 0.5 + 0.5 * np.sin(angle * 2)
+                b = 0.5 + 0.5 * np.cos(angle + 1)
+                face_color = [r, g, b]
+                
+                side_colors.extend([face_color] * 6)
+                
+            self.colors = np.array(
+                bottom_colors + top_colors + side_colors,
+                dtype=np.float32
+            )
         
     def _draw_model(self):
         offset = 0

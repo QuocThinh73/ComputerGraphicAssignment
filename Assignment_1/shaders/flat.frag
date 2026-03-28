@@ -1,8 +1,8 @@
 #version 330 core
 
-// output fragment color for OpenGL
-out vec4 out_color;
+in vec3 out_color;
+out vec4 fragColor;
 
 void main() {
-    out_color = vec4(1, 0, 1, 1);
+    fragColor = vec4(out_color, 1.0);
 }

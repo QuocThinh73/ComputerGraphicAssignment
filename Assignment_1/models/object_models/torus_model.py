@@ -4,12 +4,14 @@ from ..base_model import BaseModel
 
 
 class TorusModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, major_radius, minor_radius):
+    def __init__(self, vert_shader, frag_shader, major_radius, minor_radius, color):
         self.major_radius = major_radius
         self.minor_radius = minor_radius
         
         self.major_segments = 360
         self.minor_segments = 360
+        
+        self.color = color
         
         super().__init__(vert_shader, frag_shader)
 
@@ -52,21 +54,24 @@ class TorusModel(BaseModel):
         self.indices = np.array(indices, dtype=np.uint32)
 
     def _build_colors(self):
-        colors = []
-        
-        for i in range(self.major_segments + 1):
-            theta = i * (2.0 * np.pi / self.major_segments)
+        if 'flat' in self.vert_shader.lower():
+            self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
+        else:
+            colors = []
             
-            for j in range(self.minor_segments + 1):
-                phi = j * (2.0 * np.pi / self.minor_segments)
+            for i in range(self.major_segments + 1):
+                theta = i * (2.0 * np.pi / self.major_segments)
                 
-                r = 0.5 + 0.5 * np.cos(theta)
-                g = 0.5 + 0.5 * np.sin(theta + phi)
-                b = 0.5 + 0.5 * np.cos(phi)
-                
-                colors.append([r, g, b])
-                
-        self.colors = np.array(colors, dtype=np.float32)
+                for j in range(self.minor_segments + 1):
+                    phi = j * (2.0 * np.pi / self.minor_segments)
+                    
+                    r = 0.5 + 0.5 * np.cos(theta)
+                    g = 0.5 + 0.5 * np.sin(theta + phi)
+                    b = 0.5 + 0.5 * np.cos(phi)
+                    
+                    colors.append([r, g, b])
+                    
+            self.colors = np.array(colors, dtype=np.float32)
 
     def _draw_model(self):
         GL.glDrawElements(GL.GL_TRIANGLES, self.indices.shape[0], GL.GL_UNSIGNED_INT, None)

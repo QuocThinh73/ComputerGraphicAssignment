@@ -4,11 +4,12 @@ from ..base_model import BaseModel
 
 
 class TruncatedConeModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, bottom_radius, top_radius, height):
+    def __init__(self, vert_shader, frag_shader, bottom_radius, top_radius, height, color):
         self.bottom_radius = bottom_radius
         self.top_radius = top_radius
         self.height = height
         self.num_points = 360
+        self.color = color
         super().__init__(vert_shader, frag_shader)
         
     def _build_vertices(self):
@@ -66,45 +67,48 @@ class TruncatedConeModel(BaseModel):
         )
         
     def _build_colors(self):
-        bottom_colors = [
-            [1.0, 1.0, 1.0] # bottom center
-        ]
-        top_colors = [
-            [1.0, 1.0, 1.0] # top center
-        ]
-        
-        for i in range(self.num_points + 1):
-            angle = i * (2.0 * np.pi / self.num_points)
+        if 'flat' in self.vert_shader.lower():
+            self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
+        else:
+            bottom_colors = [
+                [1.0, 1.0, 1.0] # bottom center
+            ]
+            top_colors = [
+                [1.0, 1.0, 1.0] # top center
+            ]
             
-            r = np.cos(angle)
-            g = np.sin(angle)
-            b = 0.5 + 0.5 * np.cos(angle)
+            for i in range(self.num_points + 1):
+                angle = i * (2.0 * np.pi / self.num_points)
+                
+                r = np.cos(angle)
+                g = np.sin(angle)
+                b = 0.5 + 0.5 * np.cos(angle)
+                
+                bottom_colors.append([r, g, b])
+                top_colors.append([r, g, b])
+                
+            side_colors = []
             
-            bottom_colors.append([r, g, b])
-            top_colors.append([r, g, b])
-            
-        side_colors = []
-        
-        for i in range(self.num_points):
-            angle1 = i * (2.0 * np.pi / self.num_points)
-            r1 = np.cos(angle1)
-            g1 = np.sin(angle1)
-            b1 = 0.5 + 0.5 * np.cos(angle1)
-            color1 = [r1, g1, b1]
-            
-            angle2 = (i + 1) * (2.0 * np.pi / self.num_points)
-            r2 = np.cos(angle2)
-            g2 = np.sin(angle2)
-            b2 = 0.5 + 0.5 * np.cos(angle2)
-            color2 = [r2, g2, b2]
-            
-            side_colors.extend([color1, color2, color1])
-            side_colors.extend([color1, color2, color1])
-            
-        self.colors = np.array(
-            bottom_colors + top_colors + side_colors,
-            dtype=np.float32
-        )
+            for i in range(self.num_points):
+                angle1 = i * (2.0 * np.pi / self.num_points)
+                r1 = np.cos(angle1)
+                g1 = np.sin(angle1)
+                b1 = 0.5 + 0.5 * np.cos(angle1)
+                color1 = [r1, g1, b1]
+                
+                angle2 = (i + 1) * (2.0 * np.pi / self.num_points)
+                r2 = np.cos(angle2)
+                g2 = np.sin(angle2)
+                b2 = 0.5 + 0.5 * np.cos(angle2)
+                color2 = [r2, g2, b2]
+                
+                side_colors.extend([color1, color2, color1])
+                side_colors.extend([color1, color2, color1])
+                
+            self.colors = np.array(
+                bottom_colors + top_colors + side_colors,
+                dtype=np.float32
+            )
         
     def _draw_model(self):
         offset = 0
