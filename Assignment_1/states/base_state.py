@@ -19,6 +19,11 @@ class IntParam(Parameter):
 class StringParam(Parameter):
     def __init__(self, label, value):
         super().__init__(label, str(value), None, None)
+        
+
+class ColorParam(Parameter):
+    def __init__(self, label, value=(1.0, 1.0, 1.0)):
+        super().__init__(label, value, None, None)
 
 
 class BaseState:

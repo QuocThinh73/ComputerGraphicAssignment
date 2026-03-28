@@ -1,4 +1,4 @@
-from ..base_state import BaseState, FloatParam
+from ..base_state import BaseState, FloatParam, ColorParam
 
 
 class TorusState(BaseState):
@@ -7,4 +7,5 @@ class TorusState(BaseState):
         self.params = {
             "major_radius": FloatParam("Major Radius", 1.0),
             "minor_radius": FloatParam("Minor Radius", 0.3),
+            "color": ColorParam("Color", (0.0, 0.0, 1.0)),
         }

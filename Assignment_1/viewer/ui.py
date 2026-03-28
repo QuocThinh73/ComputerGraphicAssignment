@@ -1,5 +1,5 @@
 import imgui
-from states.base_state import FloatParam, IntParam, StringParam
+from states.base_state import FloatParam, IntParam, StringParam, ColorParam
 
 class ViewerUI:
     def __init__(self, state):
@@ -65,6 +65,8 @@ class ViewerUI:
                         changed_p, new_val = imgui.slider_int(unique_label, param.value, param.min_val, param.max_val)
                     elif isinstance(param, StringParam):
                         changed_p, new_val = imgui.input_text(unique_label, param.value, 256)
+                    elif isinstance(param, ColorParam):
+                        changed_p, new_val = imgui.color_edit3(unique_label, *param.value)
 
                     if changed_p:
                         param.value = new_val

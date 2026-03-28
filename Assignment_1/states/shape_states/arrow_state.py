@@ -1,4 +1,4 @@
-from ..base_state import BaseState, FloatParam
+from ..base_state import BaseState, FloatParam, ColorParam
 
 
 class ArrowState(BaseState):
@@ -9,4 +9,5 @@ class ArrowState(BaseState):
             "shaft_length": FloatParam("Shaft Length", 1.5),
             "head_width": FloatParam("Head Width", 1.5),
             "head_length": FloatParam("Head Length", 1.0),
+            "color": ColorParam("Color", (0.0, 0.0, 1.0)),
         }

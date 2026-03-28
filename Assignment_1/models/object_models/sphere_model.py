@@ -4,10 +4,11 @@ from ..base_model import BaseModel
 
 
 class Sphere1Model(BaseModel):
-    def __init__(self, vert_shader, frag_shader, radius, sectors, stacks):
+    def __init__(self, vert_shader, frag_shader, radius, sectors, stacks, color):
         self.radius = radius
         self.sectors = sectors # longitude
         self.stacks = stacks   # latitude
+        self.color = color
         super().__init__(vert_shader, frag_shader)
 
     def _build_vertices(self):
@@ -38,17 +39,21 @@ class Sphere1Model(BaseModel):
         self.vertices = np.array(vertices, dtype=np.float32)
 
     def _build_colors(self):
-        normalized_pos = self.vertices / self.radius
-        self.colors = (normalized_pos + 1.0) / 2.0
+        if 'flat' in self.vert_shader.lower():
+            self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
+        else:
+            normalized_pos = self.vertices / self.radius
+            self.colors = (normalized_pos + 1.0) / 2.0
 
     def _draw_model(self):
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, len(self.vertices))
         
     
 class Sphere2Model(BaseModel):
-    def __init__(self, vert_shader, frag_shader, radius, segments):
+    def __init__(self, vert_shader, frag_shader, radius, segments, color):
         self.radius = radius
         self.segments = segments
+        self.color = color
         super().__init__(vert_shader, frag_shader)
 
     def _build_vertices(self):
@@ -88,17 +93,21 @@ class Sphere2Model(BaseModel):
         self.vertices = np.array(vertices, dtype=np.float32)
 
     def _build_colors(self):
-        normalized_pos = self.vertices / self.radius
-        self.colors = (normalized_pos + 1.0) / 2.0
+        if 'flat' in self.vert_shader.lower():
+            self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
+        else:
+            normalized_pos = self.vertices / self.radius
+            self.colors = (normalized_pos + 1.0) / 2.0
 
     def _draw_model(self):
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, len(self.vertices))
         
 
 class Sphere3Model(BaseModel):
-    def __init__(self, vert_shader, frag_shader, radius, subdivisions):
+    def __init__(self, vert_shader, frag_shader, radius, subdivisions, color):
         self.radius = radius
         self.subdivisions = subdivisions
+        self.color = color
         super().__init__(vert_shader, frag_shader)
 
     def _build_vertices(self):
@@ -143,8 +152,11 @@ class Sphere3Model(BaseModel):
         self.vertices = np.array(vertices, dtype=np.float32)
 
     def _build_colors(self):
-        normalized_pos = self.vertices / self.radius
-        self.colors = (normalized_pos + 1.0) / 2.0
+        if 'flat' in self.vert_shader.lower():
+            self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
+        else:
+            normalized_pos = self.vertices / self.radius
+            self.colors = (normalized_pos + 1.0) / 2.0
 
     def _draw_model(self):
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, len(self.vertices))

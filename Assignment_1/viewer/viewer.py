@@ -49,7 +49,7 @@ class Viewer:
         glfw.set_cursor_pos_callback(self.win, self.on_mouse_move)
         glfw.set_scroll_callback(self.win, self.on_scroll)
         
-        self.trackball = Camera(yaw=0.0, pitch=30.0, distance=30.0)
+        self.trackball = Camera(yaw=0.0, pitch=30.0, distance=5.0)
 
     def _init_opengl(self):
         print(

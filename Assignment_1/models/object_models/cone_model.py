@@ -4,10 +4,11 @@ from ..base_model import BaseModel
 
 
 class ConeModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, radius, height):
+    def __init__(self, vert_shader, frag_shader, radius, height, color):
         self.radius = radius
         self.height = height
         self.num_points = 360
+        self.color = color
         super().__init__(vert_shader, frag_shader)
         
     def _build_vertices(self):
@@ -34,27 +35,30 @@ class ConeModel(BaseModel):
         )
         
     def _build_colors(self):
-        bottom_colors = [
-            [1.0, 1.0, 1.0] # bottom center
-        ]
-        side_colors = [
-            [1.0, 1.0, 1.0]
-        ]
-        
-        for i in range(self.num_points + 1):
-            angle = i * (2.0 * np.pi / self.num_points)
+        if 'flat' in self.vert_shader.lower():
+            self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
+        else:
+            bottom_colors = [
+                [1.0, 1.0, 1.0] # bottom center
+            ]
+            side_colors = [
+                [1.0, 1.0, 1.0]
+            ]
             
-            r = np.cos(angle)
-            g = np.sin(angle)
-            b = 0.5 + 0.5 * np.cos(angle)
-            
-            bottom_colors.append([r, g, b])
-            side_colors.append([r, g, b])
-            
-        self.colors = np.array(
-            bottom_colors + side_colors,
-            dtype=np.float32
-        )
+            for i in range(self.num_points + 1):
+                angle = i * (2.0 * np.pi / self.num_points)
+                
+                r = np.cos(angle)
+                g = np.sin(angle)
+                b = 0.5 + 0.5 * np.cos(angle)
+                
+                bottom_colors.append([r, g, b])
+                side_colors.append([r, g, b])
+                
+            self.colors = np.array(
+                bottom_colors + side_colors,
+                dtype=np.float32
+            )
         
     def _draw_model(self):
         # bottom

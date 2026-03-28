@@ -4,11 +4,12 @@ from ..base_model import BaseModel
 
 
 class ArrowModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, shaft_width, shaft_length, head_width, head_length):
+    def __init__(self, vert_shader, frag_shader, shaft_width, shaft_length, head_width, head_length, color):
         self.shaft_width = shaft_width
         self.shaft_length = shaft_length
         self.head_width = head_width
         self.head_length = head_length
+        self.color = color
         super().__init__(vert_shader, frag_shader)
         
     def _build_vertices(self):
@@ -42,15 +43,18 @@ class ArrowModel(BaseModel):
         ], dtype=np.uint32)
 
     def _build_colors(self):
-        self.colors = np.array([
-            [1.0, 0.5, 0.0],
-            [1.0, 0.8, 0.0],
-            [1.0, 0.5, 0.0],
-            [1.0, 0.8, 0.0],
-            [1.0, 0.0, 0.0],
-            [1.0, 0.0, 0.5],
-            [1.0, 0.0, 0.0],
-        ], dtype=np.float32)
+        if 'flat' in self.vert_shader.lower():
+            self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
+        else:
+            self.colors = np.array([
+                [1.0, 0.5, 0.0],
+                [1.0, 0.8, 0.0],
+                [1.0, 0.5, 0.0],
+                [1.0, 0.8, 0.0],
+                [1.0, 0.0, 0.0],
+                [1.0, 0.0, 0.5],
+                [1.0, 0.0, 0.0],
+            ], dtype=np.float32)
         
     def _draw_model(self):
         GL.glDrawElements(GL.GL_TRIANGLES, self.indices.shape[0], GL.GL_UNSIGNED_INT, None)
