@@ -14,6 +14,11 @@ class FloatParam(Parameter):
 class IntParam(Parameter):
     def __init__(self, label, value, min_val=1, max_val=100):
         super().__init__(label, int(value), int(min_val), int(max_val))
+        
+
+class StringParam(Parameter):
+    def __init__(self, label, value):
+        super().__init__(label, str(value), None, None)
 
 
 class BaseState:
