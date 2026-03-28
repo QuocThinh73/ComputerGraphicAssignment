@@ -51,26 +51,33 @@ class ViewerUI:
             selected_obj = next((o for o in self.state.scene_objects if o["id"] == self.state.selected_obj_id), None)
             
             if selected_obj:
-                imgui.text(f"Properties: {selected_obj['name']}")
                 obj_state = selected_obj["state"]
                 
-                for param_id, param in obj_state.params.items():
-                    changed_p = False
-                    new_val = param.value
-                    unique_label = f"{param.label}##{param_id}_{selected_obj['id']}"
-                    
-                    if isinstance(param, FloatParam):
+                if imgui.collapsing_header("Transform", flags=imgui.TREE_NODE_DEFAULT_OPEN)[0]:
+                    for param_id, param in obj_state.transform_params.items():
+                        unique_label = f"{param.label}##{param_id}_{selected_obj['id']}"
                         changed_p, new_val = imgui.slider_float(unique_label, param.value, param.min_val, param.max_val)
-                    elif isinstance(param, IntParam):
-                        changed_p, new_val = imgui.slider_int(unique_label, param.value, param.min_val, param.max_val)
-                    elif isinstance(param, StringParam):
-                        changed_p, new_val = imgui.input_text(unique_label, param.value, 256)
-                    elif isinstance(param, ColorParam):
-                        changed_p, new_val = imgui.color_edit3(unique_label, *param.value)
+                        if changed_p:
+                            param.value = new_val
+                
+                if imgui.collapsing_header("Properties", flags=imgui.TREE_NODE_DEFAULT_OPEN)[0]:
+                    for param_id, param in obj_state.params.items():
+                        changed_p = False
+                        new_val = param.value
+                        unique_label = f"{param.label}##{param_id}_{selected_obj['id']}"
+                        
+                        if isinstance(param, FloatParam):
+                            changed_p, new_val = imgui.slider_float(unique_label, param.value, param.min_val, param.max_val)
+                        elif isinstance(param, IntParam):
+                            changed_p, new_val = imgui.slider_int(unique_label, param.value, param.min_val, param.max_val)
+                        elif isinstance(param, StringParam):
+                            changed_p, new_val = imgui.input_text(unique_label, param.value, 256)
+                        elif isinstance(param, ColorParam):
+                            changed_p, new_val = imgui.color_edit3(unique_label, *param.value)
 
-                    if changed_p:
-                        param.value = new_val
-                        selected_obj["need_rebuild"] = True
+                        if changed_p:
+                            param.value = new_val
+                            selected_obj["need_rebuild"] = True
         else:
             imgui.text_disabled("Select an object to edit its properties.")
 

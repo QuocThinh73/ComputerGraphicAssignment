@@ -30,6 +30,18 @@ class BaseState:
     def __init__(self, name):
         self.name = name
         self.params = {}
+        
+        self.transform_params = {
+            "pos_x": FloatParam("Position X", 0.0, -20.0, 20.0),
+            "pos_y": FloatParam("Position Y", 0.0, -20.0, 20.0),
+            "pos_z": FloatParam("Position Z", 0.0, -20.0, 20.0),
+            "rot_x": FloatParam("Rotation X", 0.0, -180.0, 180.0),
+            "rot_y": FloatParam("Rotation Y", 0.0, -180.0, 180.0),
+            "rot_z": FloatParam("Rotation Z", 0.0, -180.0, 180.0),
+        }
 
     def get_params_values(self):
         return {key: param.value for key, param in self.params.items()}
+    
+    def get_transform_values(self):
+        return {key: param.value for key, param in self.transform_params.items()}

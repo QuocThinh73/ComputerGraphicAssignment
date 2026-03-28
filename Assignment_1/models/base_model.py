@@ -51,7 +51,7 @@ class BaseModel:
 
     def draw(self, projection, view, model):
         GL.glUseProgram(self.shader.render_idx)
-        modelview = view
+        modelview = view @ model
 
         self.uma.upload_uniform_matrix4fv(projection, 'projection', True)
         self.uma.upload_uniform_matrix4fv(modelview, 'modelview', True)
