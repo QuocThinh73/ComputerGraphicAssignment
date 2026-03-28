@@ -53,10 +53,13 @@ class Scene:
             if obj["need_rebuild"]:
                 params = obj["state"].get_params_values()
                 
+                obj_state = obj["state"]
+                current_shader = obj_state.shader_names[obj_state.shader_index]
+                
                 try:
                     obj["model"] = build_shape(
                         obj["type"],
-                        self.state.current_shader_name,
+                        current_shader,
                         **params
                     )
                 except Exception as e:

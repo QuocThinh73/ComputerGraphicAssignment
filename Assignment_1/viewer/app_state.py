@@ -31,16 +31,9 @@ class AppState:
         self.available_types = list(self.blueprints.keys())
         self.selected_add_index = self.available_types.index("Cube")
         
-        self.shader_names = ["Flat", "ColorInterp", "Phong", "Gouraud"]
-        self.shader_index = 0
-        
         self.scene_objects = []
         self.next_obj_id = 1
         self.selected_obj_id = None
-
-    @property
-    def current_shader_name(self):
-        return self.shader_names[self.shader_index]
 
     def add_object(self, obj_type):
         if obj_type in self.blueprints:

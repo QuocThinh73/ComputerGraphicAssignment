@@ -34,8 +34,32 @@ class ConeModel(BaseModel):
             dtype=np.float32
         )
         
+    def _build_normals(self):
+        bottom_count = len(self.vertices) // 2
+        bottom_normals = np.tile([0.0, -1.0, 0.0], (bottom_count, 1))
+        
+        side_normals = [
+            [0.0, 1.0, 0.0]
+        ]
+        
+        len_n = np.sqrt(self.height**2 + self.radius**2) 
+        ny = self.radius / len_n
+        
+        for i in range(self.num_points + 1):
+            angle = i * (2.0 * np.pi / self.num_points)
+            
+            nx = (self.height * np.cos(angle)) / len_n
+            nz = (self.height * np.sin(angle)) / len_n
+            
+            side_normals.append([nx, ny, nz])
+            
+        self.normals = np.vstack((bottom_normals, side_normals)).astype(np.float32)
+        
     def _build_colors(self):
-        if 'flat' in self.vert_shader.lower():
+        shader_name = self.vert_shader.lower()
+        if 'gouraud' in shader_name or 'phong' in shader_name:
+            self.colors = np.zeros_like(self.vertices, dtype=np.float32)
+        elif 'flat' in shader_name:
             self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
         else:
             bottom_colors = [

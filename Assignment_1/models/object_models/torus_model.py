@@ -52,9 +52,33 @@ class TorusModel(BaseModel):
                 indices.extend([v0, v1, v2, v0, v2, v3])
                 
         self.indices = np.array(indices, dtype=np.uint32)
+        
+    def _build_normals(self):
+        normals = []
+        
+        for i in range(self.major_segments + 1):
+            theta = i * (2.0 * np.pi / self.major_segments)
+            cos_theta = np.cos(theta)
+            sin_theta = np.sin(theta)
+            
+            for j in range(self.minor_segments + 1):
+                phi = j * (2.0 * np.pi / self.minor_segments)
+                cos_phi = np.cos(phi)
+                sin_phi = np.sin(phi)
+                
+                nx = cos_phi * cos_theta
+                ny = cos_phi * sin_theta
+                nz = sin_phi
+                
+                normals.append([nx, ny, nz])
+                
+        self.normals = np.array(normals, dtype=np.float32)
 
     def _build_colors(self):
-        if 'flat' in self.vert_shader.lower():
+        shader_name = self.vert_shader.lower()
+        if 'gouraud' in shader_name or 'phong' in shader_name:
+            self.colors = np.zeros_like(self.vertices, dtype=np.float32)
+        elif 'flat' in shader_name:
             self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
         else:
             colors = []

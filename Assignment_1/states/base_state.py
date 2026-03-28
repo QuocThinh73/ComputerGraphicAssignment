@@ -39,6 +39,9 @@ class BaseState:
             "rot_y": FloatParam("Rotation Y", 0.0, -180.0, 180.0),
             "rot_z": FloatParam("Rotation Z", 0.0, -180.0, 180.0),
         }
+        
+        self.shader_names = ["Flat", "ColorInterp", "Phong", "Gouraud"]
+        self.shader_index = 0
 
     def get_params_values(self):
         return {key: param.value for key, param in self.params.items()}

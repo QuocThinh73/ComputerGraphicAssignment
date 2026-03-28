@@ -7,13 +7,7 @@ class ViewerUI:
 
     def draw(self):
         imgui.begin("Scene Manager")
-
-        changed_shader, new_shader_idx = imgui.combo("Shader", self.state.shader_index, self.state.shader_names)
-        if changed_shader:
-            self.state.shader_index = new_shader_idx
-            for obj in self.state.scene_objects:
-                obj["need_rebuild"] = True
-
+        
         imgui.separator()
 
         imgui.text("Add Object:")
@@ -61,6 +55,15 @@ class ViewerUI:
                             param.value = new_val
                 
                 if imgui.collapsing_header("Properties", flags=imgui.TREE_NODE_DEFAULT_OPEN)[0]:
+                    changed_shader, new_shader_idx = imgui.combo("Shader Mode", obj_state.shader_index, obj_state.shader_names)
+                    if changed_shader:
+                        obj_state.shader_index = new_shader_idx
+                        selected_obj["need_rebuild"] = True
+                        
+                    current_shader = obj_state.shader_names[obj_state.shader_index].lower()
+                        
+                    imgui.separator()
+                    
                     for param_id, param in obj_state.params.items():
                         changed_p = False
                         new_val = param.value
@@ -72,7 +75,7 @@ class ViewerUI:
                             changed_p, new_val = imgui.slider_int(unique_label, param.value, param.min_val, param.max_val)
                         elif isinstance(param, StringParam):
                             changed_p, new_val = imgui.input_text(unique_label, param.value, 256)
-                        elif isinstance(param, ColorParam):
+                        elif isinstance(param, ColorParam) and "flat" in current_shader:
                             changed_p, new_val = imgui.color_edit3(unique_label, *param.value)
 
                         if changed_p:

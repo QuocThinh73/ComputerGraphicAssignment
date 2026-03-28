@@ -59,8 +59,30 @@ class CylinderModel(BaseModel):
             dtype=np.float32
         )
         
+    def _build_normals(self):
+        bottom_normals = np.tile([0.0, -1.0, 0.0], (self.bottom_count, 1))
+        
+        top_normals = np.tile([0.0, 1.0, 0.0], (self.top_count, 1))
+        
+        side_normals = []
+        
+        for i in range(self.num_points):
+            angle1 = i * (2.0 * np.pi / self.num_points)
+            n1 = [np.cos(angle1), 0.0, np.sin(angle1)]
+            
+            angle2 = (i + 1) * (2.0 * np.pi / self.num_points)
+            n2 = [np.cos(angle2), 0.0, np.sin(angle2)]
+            
+            side_normals.extend([n1, n2, n1]) # [top_1, bottom_2, bottom_1]
+            side_normals.extend([n1, n2, n2]) # [top_1, top_2, bottom_2]
+            
+        self.normals = np.vstack((bottom_normals, top_normals, side_normals)).astype(np.float32)
+        
     def _build_colors(self):
-        if 'flat' in self.vert_shader.lower():
+        shader_name = self.vert_shader.lower()
+        if 'gouraud' in shader_name or 'phong' in shader_name:
+            self.colors = np.zeros_like(self.vertices, dtype=np.float32)
+        elif 'flat' in shader_name:
             self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
         else:
             bottom_colors = [

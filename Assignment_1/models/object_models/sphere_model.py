@@ -37,9 +37,15 @@ class Sphere1Model(BaseModel):
                 vertices.extend([p2, p4, p3])
                 
         self.vertices = np.array(vertices, dtype=np.float32)
+        
+    def _build_normals(self):
+        self.normals = (self.vertices / self.radius).astype(np.float32)
 
     def _build_colors(self):
-        if 'flat' in self.vert_shader.lower():
+        shader_name = self.vert_shader.lower()
+        if 'gouraud' in shader_name or 'phong' in shader_name:
+            self.colors = np.zeros_like(self.vertices, dtype=np.float32)
+        elif 'flat' in shader_name:
             self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
         else:
             normalized_pos = self.vertices / self.radius
@@ -91,9 +97,15 @@ class Sphere2Model(BaseModel):
         build_face(0, 2, 1, -1.0) # bottom (Y-)
         
         self.vertices = np.array(vertices, dtype=np.float32)
+        
+    def _build_normals(self):
+        self.normals = (self.vertices / self.radius).astype(np.float32)
 
     def _build_colors(self):
-        if 'flat' in self.vert_shader.lower():
+        shader_name = self.vert_shader.lower()
+        if 'gouraud' in shader_name or 'phong' in shader_name:
+            self.colors = np.zeros_like(self.vertices, dtype=np.float32)
+        elif 'flat' in shader_name:
             self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
         else:
             normalized_pos = self.vertices / self.radius
@@ -150,9 +162,15 @@ class Sphere3Model(BaseModel):
             vertices.extend(tri)
             
         self.vertices = np.array(vertices, dtype=np.float32)
+        
+    def _build_normals(self):
+        self.normals = (self.vertices / self.radius).astype(np.float32)
 
     def _build_colors(self):
-        if 'flat' in self.vert_shader.lower():
+        shader_name = self.vert_shader.lower()
+        if 'gouraud' in shader_name or 'phong' in shader_name:
+            self.colors = np.zeros_like(self.vertices, dtype=np.float32)
+        elif 'flat' in shader_name:
             self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
         else:
             normalized_pos = self.vertices / self.radius
