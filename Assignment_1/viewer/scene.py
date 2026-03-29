@@ -46,7 +46,6 @@ class Scene:
     def __init__(self, state):
         self.state = state
         
-        vert_flat, frag_flat = SHADER_FILES["Flat"]
         self.grid_model = GridFloorModel(
             "shaders/flat.vert",
             "shaders/flat.frag",
@@ -56,6 +55,15 @@ class Scene:
             show_y=self.state.show_grid_y,
             show_z=self.state.show_grid_z
         ).setup()
+        
+        self.light_marker = build_shape(
+            "Sphere1", 
+            "Flat", 
+            radius=0.1,
+            sectors=16,
+            stacks=16,
+            color=(1.0, 1.0, 0.5)
+        )
 
     def update(self):
         if self.state.grid_need_rebuild:
@@ -114,3 +122,11 @@ class Scene:
                 obj["model"].draw(projection, view, model_matrix, lights=self.state.lights)
                 
                 GL.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL)
+                
+        for light in self.state.lights:
+            if getattr(light, 'enabled', True):
+                Lx, Ly, Lz = light.position
+                T_light = create_translation_matrix(Lx, Ly, Lz)
+                
+                if hasattr(self, 'light_marker') and self.light_marker is not None:
+                    self.light_marker.draw(projection, view, T_light)

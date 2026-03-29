@@ -1,5 +1,7 @@
 import imgui
 from states.base_state import FloatParam, IntParam, StringParam, ColorParam
+import numpy as np
+
 
 class ViewerUI:
     def __init__(self, state):
@@ -140,28 +142,54 @@ class ViewerUI:
         
         if imgui.button("Add New Light (White)"):
             self.state.add_light()
-            # Kích hoạt vẽ lại scene
             for obj in self.state.scene_objects:
                 obj["need_rebuild"] = True
 
         imgui.separator()
 
+        light_to_delete = None
+
         for i, light in enumerate(self.state.lights):
-            imgui.push_id(str(i)) # Chống trùng ID UI
-            
-            # Checkbox Bật/Tắt
-            changed_on, new_on = imgui.checkbox(f"Light {i+1}", getattr(light, 'enabled', True))
-            if changed_on:
-                light.enabled = new_on
-                for obj in self.state.scene_objects: obj["need_rebuild"] = True
+            # Tạo Header thu gọn cho từng đèn cho đỡ rối mắt
+            if imgui.collapsing_header(f"Light {i+1}", flags=imgui.TREE_NODE_DEFAULT_OPEN)[0]:
+                imgui.push_id(f"light_group_{i}") 
                 
-            imgui.same_line()
-            
-            # Nút xóa đèn
-            if imgui.button("Delete"):
-                self.state.remove_light(i)
-                for obj in self.state.scene_objects: obj["need_rebuild"] = True
+                # Checkbox Bật/Tắt
+                changed_on, new_on = imgui.checkbox("Enabled", getattr(light, 'enabled', True))
+                if changed_on: light.enabled = new_on
+                    
+                imgui.same_line()
                 
-            imgui.pop_id()
+                # Nút xóa đèn
+                if imgui.button("Delete Light"):
+                    light_to_delete = i
+                
+                # Chỉ hiện thanh trượt chỉnh thông số nếu đèn đang BẬT
+                if getattr(light, 'enabled', True):
+                    # 1. Chỉnh Tọa độ (Dùng drag_float3 để kéo chuột tăng giảm cho mượt)
+                    changed_pos, new_pos = imgui.drag_float3("Position", *light.position, 0.1)
+                    if changed_pos: 
+                        light.position = np.array(new_pos, dtype=np.float32)
+                    
+                    # 2. Chỉnh màu sắc Diffuse (Màu chính của ánh sáng)
+                    changed_diff, new_diff = imgui.color_edit3("Diffuse Color", *light.diffuse)
+                    if changed_diff: 
+                        light.diffuse = np.array(new_diff, dtype=np.float32)
+                    
+                    # 3. Chỉnh Specular & Ambient (Cho nâng cao)
+                    changed_spec, new_spec = imgui.color_edit3("Specular", *light.specular)
+                    if changed_spec: 
+                        light.specular = np.array(new_spec, dtype=np.float32)
+                        
+                    changed_amb, new_amb = imgui.color_edit3("Ambient", *light.ambient)
+                    if changed_amb: 
+                        light.ambient = np.array(new_amb, dtype=np.float32)
+
+                imgui.pop_id()
+                imgui.separator()
+
+        # Xử lý xóa đèn ở ngoài vòng lặp để không bị lỗi index
+        if light_to_delete is not None:
+            self.state.remove_light(light_to_delete)
             
         imgui.end()
