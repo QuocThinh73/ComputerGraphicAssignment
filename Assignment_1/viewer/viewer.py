@@ -48,6 +48,7 @@ class Viewer:
         glfw.set_key_callback(self.win, self.on_key)
         glfw.set_cursor_pos_callback(self.win, self.on_mouse_move)
         glfw.set_scroll_callback(self.win, self.on_scroll)
+        glfw.set_char_callback(self.win, self.on_char)
         
         self.trackball = Camera(yaw=0.0, pitch=30.0, distance=5.0)
 
@@ -109,6 +110,9 @@ class Viewer:
             return
 
         self.trackball.zoom(dy, glfw.get_window_size(win)[1])
+        
+    def on_char(self, win, codepoint):
+        self.imgui_renderer.char_callback(win, codepoint)
 
     def run(self):
         while not glfw.window_should_close(self.win):

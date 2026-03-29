@@ -46,9 +46,30 @@ class Scene:
         self.state = state
         
         vert_flat, frag_flat = SHADER_FILES["Flat"]
-        self.grid_model = GridFloorModel(vert_flat, frag_flat, size=500.0, spacing=1.0).setup()
+        self.grid_model = GridFloorModel(
+            "shaders/flat.vert",
+            "shaders/flat.frag",
+            size=500.0, 
+            spacing=1.0,
+            show_x=self.state.show_grid_x,
+            show_y=self.state.show_grid_y,
+            show_z=self.state.show_grid_z
+        ).setup()
 
     def update(self):
+        if self.state.grid_need_rebuild:
+            self.grid_model = GridFloorModel(
+                "shaders/flat.vert",
+                "shaders/flat.frag",
+                size=500.0, 
+                spacing=1.0,
+                show_x=self.state.show_grid_x,
+                show_y=self.state.show_grid_y,
+                show_z=self.state.show_grid_z
+            ).setup()
+            
+            self.state.grid_need_rebuild = False
+            
         for obj in self.state.scene_objects:
             if obj["need_rebuild"]:
                 params = obj["state"].get_params_values()
@@ -69,7 +90,7 @@ class Scene:
                 obj["need_rebuild"] = False
 
     def draw(self, projection, view):
-        if self.grid_model is not None:
+        if hasattr(self, 'grid_model') and self.grid_model is not None:
             model_matrix_grid = np.eye(4, dtype=np.float32)
             self.grid_model.draw(projection, view, model_matrix_grid)
             

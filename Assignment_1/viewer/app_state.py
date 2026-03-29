@@ -34,6 +34,12 @@ class AppState:
         self.scene_objects = []
         self.next_obj_id = 1
         self.selected_obj_id = None
+        
+        self.show_grid_x = True
+        self.show_grid_y = False
+        self.show_grid_z = True
+        
+        self.grid_need_rebuild = False
 
     def add_object(self, obj_type):
         if obj_type in self.blueprints:

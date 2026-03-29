@@ -2,61 +2,124 @@ import numpy as np
 import OpenGL.GL as GL
 from ..base_model import BaseModel
 
-
 class FunctionGraphModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, min_x, max_x, min_y, max_y, delta_x, delta_y):
+    def __init__(self, vert_shader, frag_shader, func_str, min_x, max_x, min_y, max_y, delta_x, delta_y, color):
+        self.func_str = func_str
         self.min_x = min_x
         self.max_x = max_x
         self.min_y = min_y
         self.max_y = max_y
         self.delta_x = delta_x
         self.delta_y = delta_y
+        self.color = color
         super().__init__(vert_shader, frag_shader)
 
     def _build_vertices(self):
+        if not self.func_str.strip():
+            self.vertices = np.array([], dtype=np.float32)
+            self.Z_vals = np.array([])
+            return
+            
         x_vals = np.arange(self.min_x, self.max_x + self.delta_x, self.delta_x)
         y_vals = np.arange(self.min_y, self.max_y + self.delta_y, self.delta_y)
         
         self.num_x = len(x_vals)
         self.num_y = len(y_vals)
 
-        X, Y = np.meshgrid(x_vals, y_vals, indexing='ij')
-        Z = np.sin(X) + np.cos(Y)
-
-        self.Z_vals = Z
+        x, y = np.meshgrid(x_vals, y_vals, indexing='ij')
         
-        self.vertices = np.stack([X.ravel(), Y.ravel(), Z.ravel()], axis=1).astype(np.float32)
+        math_env = {
+            "sin": np.sin,
+            "cos": np.cos,
+            "tan": np.tan,
+            "exp": np.exp,
+            "log": np.log,
+            "sqrt": np.sqrt,
+            "pi": np.pi,
+            "e": np.e,
+            "abs": np.abs,
+            "x": x,
+            "y": y
+        }
+        
+        try:
+            z = eval(self.func_str, {"__builtins__": None}, math_env)
+            
+            if isinstance(z, (int, float)):
+                z = np.full_like(x, float(z))
+                
+        except Exception as e:
+            print(f"Lỗi cú pháp hàm số: {e}")
+            z = np.zeros_like(x)
+
+        self.Z_vals = z
+        self.vertices = np.stack([x.ravel(), y.ravel(), z.ravel()], axis=1).astype(np.float32)
 
     def _build_indices(self):
+        if not hasattr(self, 'num_x') or not self.func_str.strip():
+            self.indices = np.array([], dtype=np.uint32)
+            return
+        
         indices = []
         for i in range(self.num_x - 1):
             for j in range(self.num_y - 1):
-                top_left = i * self.num_y + j
-                top_right = top_left + 1
-                bottom_left = (i + 1) * self.num_y + j
-                bottom_right = bottom_left + 1
+                tl = i * self.num_y + j
+                tr = tl + 1
+                bl = (i + 1) * self.num_y + j
+                br = bl + 1
                 
-                indices.extend([top_left, top_right, bottom_left])
-                indices.extend([top_right, bottom_right, bottom_left])
+                indices.extend([tl, tr, bl])
+                indices.extend([tr, br, bl])
                 
         self.indices = np.array(indices, dtype=np.uint32)
 
+    def _build_normals(self):
+        if not self.func_str.strip() or len(self.vertices) == 0:
+            self.normals = np.array([], dtype=np.float32)
+            return
+        
+        dz_dx, dz_dy = np.gradient(self.Z_vals, self.delta_x, self.delta_y)
+        
+        nx = -dz_dx.ravel()
+        ny = -dz_dy.ravel()
+        nz = np.ones_like(nx)
+        
+        normals = np.stack([nx, ny, nz], axis=1)
+        lengths = np.linalg.norm(normals, axis=1, keepdims=True)
+        
+        self.normals = (normals / lengths).astype(np.float32)
+
     def _build_colors(self):
-        Z_flat = self.Z_vals.ravel()
-        z_min, z_max = np.min(Z_flat), np.max(Z_flat)
+        if not self.func_str.strip() or len(self.vertices) == 0:
+            self.colors = np.array([], dtype=np.float32)
+            return
         
-        if z_min == z_max:
-            Z_norm = np.zeros_like(Z_flat)
-        else:
-            Z_norm = (Z_flat - z_min) / (z_max - z_min)
+        shader_name = self.vert_shader.lower()
+        if 'gouraud' in shader_name or 'phong' in shader_name:
+            self.colors = np.zeros_like(self.vertices, dtype=np.float32)
             
-        colors = np.zeros((len(self.vertices), 3), dtype=np.float32)
-        
-        colors[:, 0] = Z_norm
-        colors[:, 1] = np.sin(Z_norm * np.pi)
-        colors[:, 2] = 1.0 - Z_norm
-        
-        self.colors = colors
+        elif 'flat' in shader_name:
+            self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
+            
+        else:
+            z_vals = self.vertices[:, 2]
+            z_min, z_max = np.min(z_vals), np.max(z_vals)
+            
+            if z_min == z_max:
+                z_norm = np.zeros_like(z_vals)
+            else:
+                z_norm = (z_vals - z_min) / (z_max - z_min)
+                
+            colors = np.zeros_like(self.vertices, dtype=np.float32)
+            
+            colors[:, 0] = np.clip(3.0 * z_norm - 1.0, 0.0, 1.0)
+            colors[:, 1] = np.clip(1.5 - np.abs(3.0 * z_norm - 1.5), 0.0, 1.0)
+            colors[:, 2] = np.clip(2.0 - 3.0 * z_norm, 0.0, 1.0)
+            
+            self.colors = colors
 
     def _draw_model(self):
+        if not hasattr(self, 'indices') or len(self.indices) == 0:
+            return
+        
         GL.glDrawElements(GL.GL_TRIANGLES, self.indices.shape[0], GL.GL_UNSIGNED_INT, None)

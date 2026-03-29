@@ -8,6 +8,18 @@ class ViewerUI:
     def draw(self):
         imgui.begin("Scene Manager")
         
+        if imgui.collapsing_header("Environment (Grid)", flags=imgui.TREE_NODE_DEFAULT_OPEN)[0]:
+            imgui.text("Toggle Axes:")
+            
+            changed_x, self.state.show_grid_x = imgui.checkbox("X", self.state.show_grid_x)
+            imgui.same_line()
+            changed_y, self.state.show_grid_y = imgui.checkbox("Y", self.state.show_grid_y)
+            imgui.same_line()
+            changed_z, self.state.show_grid_z = imgui.checkbox("Z", self.state.show_grid_z)
+            
+            if changed_x or changed_y or changed_z:
+                self.state.grid_need_rebuild = True
+        
         imgui.separator()
 
         imgui.text("Add Object:")
@@ -71,10 +83,20 @@ class ViewerUI:
                         
                         if isinstance(param, FloatParam):
                             changed_p, new_val = imgui.slider_float(unique_label, param.value, param.min_val, param.max_val)
+                            
                         elif isinstance(param, IntParam):
                             changed_p, new_val = imgui.slider_int(unique_label, param.value, param.min_val, param.max_val)
+                            
                         elif isinstance(param, StringParam):
-                            changed_p, new_val = imgui.input_text(unique_label, param.value, 256)
+                            changed_p, new_val = imgui.input_text(unique_label, param.value, 256, flags=imgui.INPUT_TEXT_ENTER_RETURNS_TRUE)
+                            if changed_p:
+                                param.value = new_val
+                                
+                            param.value = new_val 
+                            
+                            if changed_p:
+                                selected_obj["need_rebuild"] = True
+                                
                         elif isinstance(param, ColorParam) and "flat" in current_shader:
                             changed_p, new_val = imgui.color_edit3(unique_label, *param.value)
 
