@@ -6,8 +6,27 @@ import numpy as np
 class ViewerUI:
     def __init__(self, state):
         self.state = state
-
+        
     def draw(self):
+        if imgui.begin_main_menu_bar():
+            if imgui.begin_menu("Application Mode"):
+                clicked_1, _ = imgui.menu_item("Scene Builder", selected=(self.state.current_app_mode == self.state.APP_MODE_SCENE))
+                if clicked_1: 
+                    self.state.current_app_mode = self.state.APP_MODE_SCENE
+                    
+                clicked_2, _ = imgui.menu_item("SGD Visualizer", selected=(self.state.current_app_mode == self.state.APP_MODE_SGD))
+                if clicked_2: 
+                    self.state.current_app_mode = self.state.APP_MODE_SGD
+                    
+                imgui.end_menu()
+            imgui.end_main_menu_bar()
+
+        if self.state.current_app_mode == self.state.APP_MODE_SCENE:
+            self._draw_scene_builder_ui()
+        elif self.state.current_app_mode == self.state.APP_MODE_SGD:
+            self._draw_sgd_visualizer_ui()
+
+    def _draw_scene_builder_ui(self):
         # ==========================================
         # 1. SCENE MANAGER (Quản lý môi trường & Object)
         # ==========================================
@@ -214,4 +233,8 @@ class ViewerUI:
         if light_to_delete is not None:
             self.state.remove_light(light_to_delete)
             
+        imgui.end()
+        
+    def _draw_sgd_visualizer_ui(self):
+        imgui.begin("SGD Optimization Settings")
         imgui.end()

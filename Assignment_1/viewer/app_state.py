@@ -5,6 +5,10 @@ from states import *
 
 class AppState:
     def __init__(self):
+        self.APP_MODE_SCENE = 0
+        self.APP_MODE_SGD = 1
+        self.current_app_mode = self.APP_MODE_SCENE
+        
         self.blueprints = {
             # 2D
             "Triangle": TriangleState,
