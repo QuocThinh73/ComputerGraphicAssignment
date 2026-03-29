@@ -115,12 +115,7 @@ class ViewerUI:
         imgui.begin("Camera Manager")
         
         if imgui.button("Add New Camera"):
-            from libs.camera import Camera
-            
-            new_cam = Camera(yaw=0.0, pitch=30.0, distance=5.0)
-            
-            self.state.cameras.append(new_cam)
-            self.state.active_camera_idx = len(self.state.cameras) - 1
+            self.state.add_camera()
 
         imgui.separator()
 
@@ -137,9 +132,6 @@ class ViewerUI:
 
         if len(self.state.cameras) > 1:
             if imgui.button("Delete Active Camera"):
-                self.state.cameras.pop(self.state.active_camera_idx)
-                self.state.active_camera_idx = max(0, self.state.active_camera_idx - 1)
-        else:
-            imgui.text_disabled("Cannot delete the last camera.")
+                self.state.remove_camera(self.state.active_camera_idx)
 
         imgui.end()

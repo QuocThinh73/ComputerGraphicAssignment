@@ -1,3 +1,4 @@
+from libs.camera import Camera
 from states import *
 
 class AppState:
@@ -63,3 +64,14 @@ class AppState:
         self.scene_objects = [obj for obj in self.scene_objects if obj["id"] != obj_id]
         if self.selected_obj_id == obj_id:
             self.selected_obj_id = None
+            
+    def add_camera(self):
+        new_cam = Camera(yaw=0.0, pitch=30.0, distance=5.0)
+        self.cameras.append(new_cam)
+        self.active_camera_idx = len(self.cameras) - 1
+
+    def remove_camera(self, idx):
+        if len(self.cameras) > 1:
+            self.cameras.pop(idx)
+            if self.active_camera_idx >= len(self.cameras):
+                self.active_camera_idx = len(self.cameras) - 1
