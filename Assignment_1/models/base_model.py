@@ -3,7 +3,7 @@ import numpy as np
 
 from libs.shader import *
 from libs.buffer import *
-from libs.lighting import LightingManager
+from libs.lighting import LightingManager, Material
 from libs import transform as T
 
 
@@ -68,10 +68,17 @@ class BaseModel:
         self.uma.upload_uniform_matrix4fv(projection, 'projection', True)
         self.uma.upload_uniform_matrix4fv(modelview, 'modelview', True)
         
+        current_mat = Material(
+            diffuse=getattr(self, 'diffuse', (0.6, 0.4, 0.7)),
+            specular=getattr(self, 'specular', (1.0, 1.0, 1.0)),
+            ambient=getattr(self, 'ambient', (0.1, 0.1, 0.1)),
+            shininess=getattr(self, 'shininess', 32.0)
+        )
+        
         if 'gouraud' in self.vert_shader.lower():
-            self.lighting.setup_gouraud(lights=lights)
+            self.lighting.setup_gouraud(lights=lights, material=current_mat, shininess=current_mat.shininess)
         elif 'phong' in self.vert_shader.lower():
-            self.lighting.setup_phong(lights=lights, mode=1)
+            self.lighting.setup_phong(lights=lights, material=current_mat, mode=1)
         
         self.vao.activate()
         

@@ -83,6 +83,13 @@ class ViewerUI:
                     current_shader = obj_state.shader_names[obj_state.shader_index].lower()
                     
                     for param_id, param in obj_state.params.items():
+                        is_lit = 'phong' in current_shader or 'gouraud' in current_shader
+                        
+                        if param_id == 'color' and is_lit:
+                            continue
+                        if (param_id == 'diffuse' or param_id == 'specular' or param_id == 'ambient' or param_id == 'shininess') and not is_lit:
+                            continue
+                        
                         changed_p = False
                         new_val = param.value
                         unique_label = f"{param.label}##{param_id}_{selected_obj['id']}"
@@ -103,7 +110,7 @@ class ViewerUI:
                             if changed_p:
                                 selected_obj["need_rebuild"] = True
                                 
-                        elif isinstance(param, ColorParam) and "flat" in current_shader:
+                        elif isinstance(param, ColorParam):
                             changed_p, new_val = imgui.color_edit3(unique_label, *param.value)
 
                         if changed_p:
@@ -150,33 +157,26 @@ class ViewerUI:
         light_to_delete = None
 
         for i, light in enumerate(self.state.lights):
-            # Tạo Header thu gọn cho từng đèn cho đỡ rối mắt
             if imgui.collapsing_header(f"Light {i+1}", flags=imgui.TREE_NODE_DEFAULT_OPEN)[0]:
                 imgui.push_id(f"light_group_{i}") 
                 
-                # Checkbox Bật/Tắt
                 changed_on, new_on = imgui.checkbox("Enabled", getattr(light, 'enabled', True))
                 if changed_on: light.enabled = new_on
                     
                 imgui.same_line()
                 
-                # Nút xóa đèn
                 if imgui.button("Delete Light"):
                     light_to_delete = i
                 
-                # Chỉ hiện thanh trượt chỉnh thông số nếu đèn đang BẬT
                 if getattr(light, 'enabled', True):
-                    # 1. Chỉnh Tọa độ (Dùng drag_float3 để kéo chuột tăng giảm cho mượt)
                     changed_pos, new_pos = imgui.drag_float3("Position", *light.position, 0.1)
                     if changed_pos: 
                         light.position = np.array(new_pos, dtype=np.float32)
                     
-                    # 2. Chỉnh màu sắc Diffuse (Màu chính của ánh sáng)
                     changed_diff, new_diff = imgui.color_edit3("Diffuse Color", *light.diffuse)
                     if changed_diff: 
                         light.diffuse = np.array(new_diff, dtype=np.float32)
                     
-                    # 3. Chỉnh Specular & Ambient (Cho nâng cao)
                     changed_spec, new_spec = imgui.color_edit3("Specular", *light.specular)
                     if changed_spec: 
                         light.specular = np.array(new_spec, dtype=np.float32)
@@ -188,7 +188,6 @@ class ViewerUI:
                 imgui.pop_id()
                 imgui.separator()
 
-        # Xử lý xóa đèn ở ngoài vòng lặp để không bị lỗi index
         if light_to_delete is not None:
             self.state.remove_light(light_to_delete)
             

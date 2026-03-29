@@ -1,3 +1,4 @@
+from configs import *
 from libs.lighting import Light
 from libs.camera import Camera
 from states import *
@@ -37,9 +38,9 @@ class AppState:
         self.next_obj_id = 1
         self.selected_obj_id = None
         
-        self.show_grid_x = True
-        self.show_grid_y = False
-        self.show_grid_z = True
+        self.show_grid_x = DEFAULT_SHOW_GRID_X
+        self.show_grid_y = DEFAULT_SHOW_GRID_Y
+        self.show_grid_z = DEFAULT_SHOW_GRID_Z
         
         self.grid_need_rebuild = False
         
@@ -69,7 +70,11 @@ class AppState:
             self.selected_obj_id = None
             
     def add_camera(self):
-        new_cam = Camera(yaw=0.0, pitch=30.0, distance=5.0)
+        new_cam = Camera(
+            yaw=DEFAULT_CAM_YAW, 
+            pitch=DEFAULT_CAM_PITCH, 
+            distance=DEFAULT_CAM_DISTANCE
+        )
         self.cameras.append(new_cam)
         self.active_camera_idx = len(self.cameras) - 1
 
@@ -81,10 +86,10 @@ class AppState:
                 
     def add_light(self):
         new_light = Light(
-            diffuse=(1.0, 1.0, 1.0),
-            specular=(1.0, 1.0, 1.0),
-            ambient=(0.1, 0.1, 0.1),
-            position=(0.0, 2.5, 4.33)
+            position=DEFAULT_LIGHT_POS,
+            diffuse=DEFAULT_LIGHT_DIFFUSE,
+            specular=DEFAULT_LIGHT_SPECULAR,
+            ambient=DEFAULT_LIGHT_AMBIENT
         )
         new_light.enabled = True
         self.lights.append(new_light)

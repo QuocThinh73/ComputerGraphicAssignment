@@ -77,7 +77,7 @@ class LightingManager:
     DEFAULT_LIGHT = Light(
         diffuse=(0.9, 0.4, 0.6),
         specular=(0.9, 0.4, 0.6),
-        ambient=(0.9, 0.4, 0.6),
+        ambient=(0.0, 0.0, 0.0),
         position=(0, 0.5, 0.9)
     )
     

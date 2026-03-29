@@ -4,11 +4,15 @@ from ..base_model import BaseModel
 
 
 class CubeModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, width, height, depth, color, texture_path=None):
+    def __init__(self, vert_shader, frag_shader, width, height, depth, color, diffuse, specular, ambient, shininess, texture_path):
         self.width = width
         self.height = height
         self.depth = depth
         self.color = color
+        self.diffuse = diffuse
+        self.specular = specular
+        self.ambient = ambient
+        self.shininess = shininess
         self.texture_path = texture_path
         super().__init__(vert_shader, frag_shader)
         
