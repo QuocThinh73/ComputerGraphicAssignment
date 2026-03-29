@@ -1,12 +1,14 @@
-from ..base_state import BaseState, FloatParam, ColorParam
+from ..base_state import BaseState, FloatParam, ColorParam, IntParam
 from configs import *
 
 
 class TorusState(BaseState):
     def __init__(self):
-        super().__init__("Tetrahedron")
+        super().__init__("Torus")
         self.params = {
-            "major_radius": FloatParam("Major Radius", 1.0),
-            "minor_radius": FloatParam("Minor Radius", 0.3),
+            "major_radius": FloatParam("Major Radius", DEFAULT_TORUS_MAJOR_RADIUS),
+            "minor_radius": FloatParam("Minor Radius", DEFAULT_TORUS_MINOR_RADIUS),
+            "major_segments": IntParam("Major Segments", DEFAULT_TORUS_MAJOR_SEGMENTS, 3, 360),
+            "minor_segments": IntParam("Minor Segments", DEFAULT_TORUS_MINOR_SEGMENTS, 3, 360),
             "color": ColorParam("Color", DEFAULT_COLOR),
         }

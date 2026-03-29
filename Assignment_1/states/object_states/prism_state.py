@@ -6,8 +6,8 @@ class PrismState(BaseState):
     def __init__(self):
         super().__init__("Prism")
         self.params = {
-            "radius": FloatParam("Radius", 1.0),
-            "height": FloatParam("Height", 1.0),
-            "num_sides": IntParam("Num sides", 3),
+            "radius": FloatParam("Radius", DEFAULT_PRISM_RADIUS),
+            "height": FloatParam("Height", DEFAULT_PRISM_HEIGHT),
+            "num_sides": IntParam("Num sides", DEFAULT_PRISM_NUM_SIDES, 3, 12),
             "color": ColorParam("Color", DEFAULT_COLOR),
         }

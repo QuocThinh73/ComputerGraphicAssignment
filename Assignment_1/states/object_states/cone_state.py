@@ -6,7 +6,7 @@ class ConeState(BaseState):
     def __init__(self):
         super().__init__("Cone")
         self.params = {
-            "radius": FloatParam("Radius", 0.5),
-            "height": FloatParam("Height", 1.0),
+            "radius": FloatParam("Radius", DEFAULT_CONE_RADIUS),
+            "height": FloatParam("Height", DEFAULT_CONE_HEIGHT),
             "color": ColorParam("Color", DEFAULT_COLOR),
         }

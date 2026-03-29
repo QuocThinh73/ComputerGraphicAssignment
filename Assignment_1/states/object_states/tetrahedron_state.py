@@ -6,6 +6,6 @@ class TetrahedronState(BaseState):
     def __init__(self):
         super().__init__("Tetrahedron")
         self.params = {
-            "size": FloatParam("Size", 0.5),
+            "size": FloatParam("Size", DEFAULT_TETRAHEDRON_SIZE),
             "color": ColorParam("Color", DEFAULT_COLOR),
         }

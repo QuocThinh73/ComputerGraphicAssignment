@@ -4,12 +4,11 @@ from ..base_model import BaseModel
 
 
 class TorusModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, major_radius, minor_radius, color):
+    def __init__(self, vert_shader, frag_shader, major_radius, minor_radius, major_segments, minor_segments, color):
         self.major_radius = major_radius
         self.minor_radius = minor_radius
-        
-        self.major_segments = 360
-        self.minor_segments = 360
+        self.major_segments = major_segments
+        self.minor_segments = minor_segments
         
         self.color = color
         

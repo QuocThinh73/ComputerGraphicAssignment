@@ -6,8 +6,8 @@ class TruncatedConeState(BaseState):
     def __init__(self):
         super().__init__("Truncated Cone")
         self.params = {
-            "bottom_radius": FloatParam("Bottom radius", 0.8),
-            "top_radius": FloatParam("Top radius", 0.3),
-            "height": FloatParam("Height", 1.0),
+            "bottom_radius": FloatParam("Bottom radius", DEFAULT_TRUNCATED_CONE_BOTTOM_RADIUS),
+            "top_radius": FloatParam("Top radius", DEFAULT_TRUNCATED_CONE_TOP_RADIUS),
+            "height": FloatParam("Height", DEFAULT_TRUNCATED_CONE_HEIGHT),
             "color": ColorParam("Color", DEFAULT_COLOR),
         }
