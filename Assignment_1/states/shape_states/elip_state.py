@@ -1,4 +1,5 @@
 from ..base_state import BaseState, FloatParam, ColorParam
+from configs import *
 
 
 class ElipState(BaseState):
@@ -7,5 +8,5 @@ class ElipState(BaseState):
         self.params = {
             "width": FloatParam("Width", 0.5),
             "height": FloatParam("Height", 1.0),
-            "color": ColorParam("Color", (0.0, 0.0, 1.0)),
+            "color": ColorParam("Color", DEFAULT_COLOR),
         }
