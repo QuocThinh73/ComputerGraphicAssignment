@@ -3,14 +3,14 @@ import OpenGL.GL as GL
 from ..base_model import BaseModel
 
 class GridFloorModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, size, spacing, show_x, show_y, show_z):
+    def __init__(self, render_mode, size, spacing, show_x, show_y, show_z):
         self.size = size
         self.spacing = spacing
         self.show_x = show_x
         self.show_y = show_y
         self.show_z = show_z
         
-        super().__init__(vert_shader, frag_shader)
+        super().__init__(render_mode)
 
     def _build_vertices(self):
         minor_verts, major_verts, axis_verts = [], [], []

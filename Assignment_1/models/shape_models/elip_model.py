@@ -4,13 +4,12 @@ from ..base_model import BaseModel
 
 
 class ElipModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, width, height, color):
+    def __init__(self, width, height, **kwargs):
         self.width = width
         self.height = height
         self.num_points = 360
-        self.color = color
-        super().__init__(vert_shader, frag_shader)
-        
+        super().__init__(**kwargs)
+
     def _build_vertices(self):
         vertices = [
             [0, 0, 0] # center

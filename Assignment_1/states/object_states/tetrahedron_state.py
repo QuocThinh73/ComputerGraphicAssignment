@@ -1,4 +1,4 @@
-from ..base_state import BaseState, FloatParam, ColorParam
+from ..base_state import BaseState, FloatParam
 from configs import *
 
 
@@ -7,5 +7,4 @@ class TetrahedronState(BaseState):
         super().__init__("Tetrahedron")
         self.params = {
             "size": FloatParam("Size", DEFAULT_TETRAHEDRON_SIZE),
-            "color": ColorParam("Color", DEFAULT_COLOR),
         }

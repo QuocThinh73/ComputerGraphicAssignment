@@ -4,12 +4,11 @@ from ..base_model import BaseModel
 
 
 class PrismModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, radius, height, num_sides, color):
+    def __init__(self, radius, height, num_sides, **kwargs):
         self.radius = radius
         self.height = height
-        self.num_sides = max(3, int(num_sides))
-        self.color = color
-        super().__init__(vert_shader, frag_shader)
+        self.num_sides = num_sides
+        super().__init__(**kwargs)
         
     def _build_vertices(self):
         h, r = self.height / 2.0, self.radius

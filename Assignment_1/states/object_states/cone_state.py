@@ -1,4 +1,4 @@
-from ..base_state import BaseState, FloatParam, ColorParam
+from ..base_state import BaseState, FloatParam
 from configs import *
 
 
@@ -8,5 +8,4 @@ class ConeState(BaseState):
         self.params = {
             "radius": FloatParam("Radius", DEFAULT_CONE_RADIUS),
             "height": FloatParam("Height", DEFAULT_CONE_HEIGHT),
-            "color": ColorParam("Color", DEFAULT_COLOR),
         }

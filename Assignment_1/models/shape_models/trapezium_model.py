@@ -4,13 +4,12 @@ from ..base_model import BaseModel
 
 
 class TrapeziumModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, bottom_width, top_width, height, color):
+    def __init__(self, bottom_width, top_width, height, **kwargs):
         self.bottom_width = bottom_width
         self.top_width = top_width
         self.height = height
-        self.color = color
-        super().__init__(vert_shader, frag_shader)
-        
+        super().__init__(**kwargs)
+
     def _build_vertices(self):
         bw, tw, h = self.bottom_width / 2.0, self.top_width / 2.0, self.height / 2.0
         self.vertices = np.array([

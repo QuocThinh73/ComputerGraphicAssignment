@@ -4,14 +4,13 @@ from ..base_model import BaseModel
 
 
 class TruncatedConeModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, bottom_radius, top_radius, height, color):
+    def __init__(self, bottom_radius, top_radius, height, **kwargs):
         self.bottom_radius = bottom_radius
         self.top_radius = top_radius
         self.height = height
         self.num_points = 360
-        self.color = color
-        super().__init__(vert_shader, frag_shader)
-        
+        super().__init__(**kwargs)
+
     def _build_vertices(self):
         h = self.height / 2.0
         

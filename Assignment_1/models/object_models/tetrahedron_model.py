@@ -4,11 +4,10 @@ from ..base_model import BaseModel
 
 
 class TetrahedronModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, size, color):
+    def __init__(self, size, **kwargs):
         self.size = size
-        self.color = color
-        super().__init__(vert_shader, frag_shader)
-        
+        super().__init__(**kwargs)
+
     def _build_vertices(self):
         s = self.size
         

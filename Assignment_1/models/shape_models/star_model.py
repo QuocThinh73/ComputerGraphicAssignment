@@ -4,13 +4,12 @@ from ..base_model import BaseModel
 
 
 class StarModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, short_radius, long_radius, color):
+    def __init__(self, short_radius, long_radius, **kwargs):
         self.short_radius = short_radius
         self.long_radius = long_radius
         self.num_points = 10
-        self.color = color
-        super().__init__(vert_shader, frag_shader)
-        
+        super().__init__(**kwargs)
+
     def _build_vertices(self):
         vertices = [
             [0, 0, 0] # center

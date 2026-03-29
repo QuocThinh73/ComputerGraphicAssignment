@@ -1,5 +1,5 @@
 import numpy as np
-from viewer.model_factory import build_shape, SHADER_FILES
+from viewer.model_factory import build_shape
 from models.utils.grid_floor_model import GridFloorModel
 import OpenGL.GL as GL
 
@@ -47,8 +47,7 @@ class Scene:
         self.state = state
         
         self.grid_model = GridFloorModel(
-            "shaders/flat.vert",
-            "shaders/flat.frag",
+            render_mode="Flat",
             size=500.0, 
             spacing=1.0,
             show_x=self.state.show_grid_x,
@@ -58,7 +57,7 @@ class Scene:
         
         self.light_marker = build_shape(
             "Sphere1", 
-            "Flat", 
+            render_mode="Flat",
             radius=0.1,
             sectors=16,
             stacks=16,
@@ -68,8 +67,7 @@ class Scene:
     def update(self):
         if self.state.grid_need_rebuild:
             self.grid_model = GridFloorModel(
-                "shaders/flat.vert",
-                "shaders/flat.frag",
+                render_mode="Flat",
                 size=500.0, 
                 spacing=1.0,
                 show_x=self.state.show_grid_x,
@@ -83,15 +81,8 @@ class Scene:
             if obj["need_rebuild"]:
                 params = obj["state"].get_params_values()
                 
-                obj_state = obj["state"]
-                current_shader = obj_state.shader_names[obj_state.shader_index]
-                
                 try:
-                    obj["model"] = build_shape(
-                        obj["type"],
-                        current_shader,
-                        **params
-                    )
+                    obj["model"] = build_shape(obj["type"], **params)
                 except Exception as e:
                     print(f"Error building {obj['type']}: {e}")
                     obj["model"] = None

@@ -4,14 +4,13 @@ from ..base_model import BaseModel
 
 
 class ArrowModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, shaft_width, shaft_length, head_width, head_length, color):
+    def __init__(self, shaft_width, shaft_length, head_width, head_length, **kwargs):
         self.shaft_width = shaft_width
         self.shaft_length = shaft_length
         self.head_width = head_width
         self.head_length = head_length
-        self.color = color
-        super().__init__(vert_shader, frag_shader)
-        
+        super().__init__(**kwargs)
+
     def _build_vertices(self):
         total_length = self.shaft_length + self.head_length
         

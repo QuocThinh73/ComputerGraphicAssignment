@@ -4,12 +4,11 @@ from ..base_model import BaseModel
 
 
 class Sphere1Model(BaseModel):
-    def __init__(self, vert_shader, frag_shader, radius, sectors, stacks, color):
+    def __init__(self, radius, sectors, stacks, **kwargs):
         self.radius = radius
         self.sectors = sectors # longitude
         self.stacks = stacks   # latitude
-        self.color = color
-        super().__init__(vert_shader, frag_shader)
+        super().__init__(**kwargs)
 
     def _build_vertices(self):
         vertices = []
@@ -56,11 +55,10 @@ class Sphere1Model(BaseModel):
         
     
 class Sphere2Model(BaseModel):
-    def __init__(self, vert_shader, frag_shader, radius, segments, color):
+    def __init__(self, radius, segments, **kwargs):
         self.radius = radius
         self.segments = segments
-        self.color = color
-        super().__init__(vert_shader, frag_shader)
+        super().__init__(**kwargs)
 
     def _build_vertices(self):
         vertices = []
@@ -116,11 +114,10 @@ class Sphere2Model(BaseModel):
         
 
 class Sphere3Model(BaseModel):
-    def __init__(self, vert_shader, frag_shader, radius, subdivisions, color):
+    def __init__(self, radius, subdivisions, **kwargs):
         self.radius = radius
         self.subdivisions = subdivisions
-        self.color = color
-        super().__init__(vert_shader, frag_shader)
+        super().__init__(**kwargs)
 
     def _build_vertices(self):
         A = np.array([1, 1, 1], dtype=np.float32)

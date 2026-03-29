@@ -1,4 +1,4 @@
-import OpenGL.GL as GL              # standard Python OpenGL wrapper
+import OpenGL.GL as GL              
 import numpy as np
 
 from libs.shader import *
@@ -6,21 +6,43 @@ from libs.buffer import *
 from libs.lighting import LightingManager, Material
 from libs import transform as T
 
+SHADER_FILES = {
+    "Flat": ("shaders/flat.vert", "shaders/flat.frag"),
+    "Texture": ("shaders/texture.vert", "shaders/texture.frag"),
+    "Gouraud": ("shaders/gouraud.vert", "shaders/gouraud.frag"),
+    "Phong": ("shaders/phong.vert", "shaders/phong.frag"),
+    "ColorInterp": ("shaders/color_interp.vert", "shaders/color_interp.frag") 
+}
+
 
 class BaseModel:
-    def __init__(self, vert_shader, frag_shader):
-        self.vert_shader = vert_shader
-        self.frag_shader = frag_shader
+    def __init__(self, render_mode="Flat", **kwargs):
+        self.render_mode = render_mode
+        
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+            
+        if render_mode not in SHADER_FILES:
+            raise ValueError(f"Render mode '{render_mode}' is not supported.")
+            
+        self.vert_shader, self.frag_shader = SHADER_FILES[render_mode]
+        
+        self.vertices = None
+        self.indices = None
+        self.normals = None
+        self.colors = None
+        self.texcoords = None
         
         self._build_vertices()
         self._build_indices()
         self._build_normals()
         self._build_colors()
-        self._build_texcoords()
+        
+        if self.render_mode == "Texture":
+            self._build_texcoords()
 
         self.vao = VAO()
-
-        self.shader = Shader(vert_shader, frag_shader)
+        self.shader = Shader(self.vert_shader, self.frag_shader)
         self.uma = UManager(self.shader)
         self.lighting = LightingManager(self.uma)
         
@@ -53,11 +75,10 @@ class BaseModel:
         # setup EBO
         if self.indices is not None:
             self.vao.add_ebo(self.indices)
-            
-        tex_path = getattr(self, 'texture_path', None)
-        if tex_path and "texture" in self.vert_shader.lower() and tex_path.strip() != "":
+        
+        if self.render_mode == "Texture":
             self.umanager = UManager(self.shader)
-            self.umanager.setup_texture("texture1", tex_path)
+            self.umanager.setup_texture("texture1", self.texture_path)
 
         return self
 
@@ -68,17 +89,18 @@ class BaseModel:
         self.uma.upload_uniform_matrix4fv(projection, 'projection', True)
         self.uma.upload_uniform_matrix4fv(modelview, 'modelview', True)
         
-        current_mat = Material(
-            diffuse=getattr(self, 'diffuse', (0.6, 0.4, 0.7)),
-            specular=getattr(self, 'specular', (1.0, 1.0, 1.0)),
-            ambient=getattr(self, 'ambient', (0.1, 0.1, 0.1)),
-            shininess=getattr(self, 'shininess', 32.0)
-        )
-        
-        if 'gouraud' in self.vert_shader.lower():
-            self.lighting.setup_gouraud(lights=lights, material=current_mat, shininess=current_mat.shininess)
-        elif 'phong' in self.vert_shader.lower():
-            self.lighting.setup_phong(lights=lights, material=current_mat, mode=1)
+        if self.render_mode in ["Gouraud", "Phong"]:
+            current_mat = Material(
+                diffuse=self.diffuse,
+                specular=self.specular,
+                ambient=self.ambient,
+                shininess=self.shininess
+            )
+            
+            if self.render_mode == "Gouraud":
+                self.lighting.setup_gouraud(lights=lights, material=current_mat, shininess=current_mat.shininess)
+            elif self.render_mode == "Phong":
+                self.lighting.setup_phong(lights=lights, material=current_mat, mode=1)
         
         self.vao.activate()
         

@@ -8,6 +8,9 @@ class ViewerUI:
         self.state = state
 
     def draw(self):
+        # ==========================================
+        # 1. SCENE MANAGER (Quản lý môi trường & Object)
+        # ==========================================
         imgui.begin("Scene Manager")
         
         if imgui.collapsing_header("Environment (Grid)", flags=imgui.TREE_NODE_DEFAULT_OPEN)[0]:
@@ -55,12 +58,16 @@ class ViewerUI:
         
         imgui.separator()
 
+        # ==========================================
+        # 2. SELECTED OBJECT DETAILS (Thông số Object)
+        # ==========================================
         if self.state.selected_obj_id is not None:
             selected_obj = next((o for o in self.state.scene_objects if o["id"] == self.state.selected_obj_id), None)
             
             if selected_obj:
                 obj_state = selected_obj["state"]
                 
+                # --- PHẦN TRANSFORM ---
                 if imgui.collapsing_header("Transform", flags=imgui.TREE_NODE_DEFAULT_OPEN)[0]:
                     for param_id, param in obj_state.transform_params.items():
                         unique_label = f"{param.label}##{param_id}_{selected_obj['id']}"
@@ -68,10 +75,12 @@ class ViewerUI:
                         if changed_p:
                             param.value = new_val
                 
+                # --- PHẦN PROPERTIES ---
                 if imgui.collapsing_header("Properties", flags=imgui.TREE_NODE_DEFAULT_OPEN)[0]:
-                    changed_shader, new_shader_idx = imgui.combo("Shader Mode", obj_state.shader_index, obj_state.shader_names)
-                    if changed_shader:
-                        obj_state.shader_index = new_shader_idx
+                    
+                    changed_rm, new_rm_idx = imgui.combo("Render Mode", obj_state.render_mode_idx, obj_state.render_modes)
+                    if changed_rm:
+                        obj_state.render_mode_idx = new_rm_idx
                         selected_obj["need_rebuild"] = True
                         
                     changed_wf, new_wf = imgui.checkbox(f"Wireframe Mode##wf_{selected_obj['id']}", obj_state.is_wireframe)
@@ -80,39 +89,47 @@ class ViewerUI:
                         
                     imgui.separator()
                     
-                    current_shader = obj_state.shader_names[obj_state.shader_index].lower()
+                    current_mode = obj_state.render_modes[obj_state.render_mode_idx]
                     
+                    # 2.1 Vẽ Tham Số Hình Học (Luôn hiện)
                     for param_id, param in obj_state.params.items():
-                        is_lit = 'phong' in current_shader or 'gouraud' in current_shader
-                        
-                        if param_id == 'color' and is_lit:
-                            continue
-                        if (param_id == 'diffuse' or param_id == 'specular' or param_id == 'ambient' or param_id == 'shininess') and not is_lit:
-                            continue
-                        
+                        unique_label = f"{param.label}##{param_id}_{selected_obj['id']}"
                         changed_p = False
                         new_val = param.value
-                        unique_label = f"{param.label}##{param_id}_{selected_obj['id']}"
                         
                         if isinstance(param, FloatParam):
                             changed_p, new_val = imgui.slider_float(unique_label, param.value, param.min_val, param.max_val)
-                            
                         elif isinstance(param, IntParam):
                             changed_p, new_val = imgui.slider_int(unique_label, param.value, param.min_val, param.max_val)
+                        
+                        if changed_p:
+                            param.value = new_val
+                            selected_obj["need_rebuild"] = True
                             
+                    imgui.separator()
+                    
+                    # 2.2 Vẽ Tham Số Vật Liệu Tùy Thuộc Vào Render Mode
+                    for param_id, param in obj_state.material_params.items():
+                        is_lit = current_mode in ["Phong", "Gouraud"]
+                        
+                        # Logic Ẩn/Hiện bảng thông số
+                        if param_id == 'color' and is_lit: continue
+                        if param_id == 'color' and current_mode == "Texture": continue
+                        if param_id in ['diffuse', 'specular', 'ambient', 'shininess'] and not is_lit: continue
+                        if param_id == 'texture_path' and current_mode != "Texture": continue
+                        
+                        unique_label = f"{param.label}##{param_id}_{selected_obj['id']}"
+                        changed_p = False
+                        new_val = param.value
+                        
+                        if isinstance(param, ColorParam):
+                            changed_p, new_val = imgui.color_edit3(unique_label, *param.value)
+                        elif isinstance(param, FloatParam):
+                            changed_p, new_val = imgui.slider_float(unique_label, param.value, param.min_val, param.max_val)
                         elif isinstance(param, StringParam):
                             changed_p, new_val = imgui.input_text(unique_label, param.value, 256, flags=imgui.INPUT_TEXT_ENTER_RETURNS_TRUE)
-                            if changed_p:
-                                param.value = new_val
-                                
-                            param.value = new_val 
+                            if changed_p: param.value = new_val
                             
-                            if changed_p:
-                                selected_obj["need_rebuild"] = True
-                                
-                        elif isinstance(param, ColorParam):
-                            changed_p, new_val = imgui.color_edit3(unique_label, *param.value)
-
                         if changed_p:
                             param.value = new_val
                             selected_obj["need_rebuild"] = True
@@ -121,6 +138,9 @@ class ViewerUI:
 
         imgui.end()
         
+        # ==========================================
+        # 3. CAMERA MANAGER 
+        # ==========================================
         imgui.begin("Camera Manager")
         
         if imgui.button("Add New Camera"):
@@ -145,6 +165,9 @@ class ViewerUI:
 
         imgui.end()
         
+        # ==========================================
+        # 4. LIGHTING MANAGER
+        # ==========================================
         imgui.begin("Lighting Manager")
         
         if imgui.button("Add New Light (White)"):

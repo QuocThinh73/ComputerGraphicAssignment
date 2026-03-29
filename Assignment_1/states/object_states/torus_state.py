@@ -1,4 +1,4 @@
-from ..base_state import BaseState, FloatParam, ColorParam, IntParam
+from ..base_state import BaseState, FloatParam, IntParam
 from configs import *
 
 
@@ -10,5 +10,4 @@ class TorusState(BaseState):
             "minor_radius": FloatParam("Minor Radius", DEFAULT_TORUS_MINOR_RADIUS),
             "major_segments": IntParam("Major Segments", DEFAULT_TORUS_MAJOR_SEGMENTS, 3, 360),
             "minor_segments": IntParam("Minor Segments", DEFAULT_TORUS_MINOR_SEGMENTS, 3, 360),
-            "color": ColorParam("Color", DEFAULT_COLOR),
         }

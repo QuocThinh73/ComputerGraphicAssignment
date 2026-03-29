@@ -3,7 +3,7 @@ import OpenGL.GL as GL
 from ..base_model import BaseModel
 
 class FunctionGraphModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, func_str, min_x, max_x, min_y, max_y, delta_x, delta_y, color):
+    def __init__(self, render_mode, func_str, min_x, max_x, min_y, max_y, delta_x, delta_y, color):
         self.func_str = func_str
         self.min_x = min_x
         self.max_x = max_x
@@ -12,7 +12,7 @@ class FunctionGraphModel(BaseModel):
         self.delta_x = delta_x
         self.delta_y = delta_y
         self.color = color
-        super().__init__(vert_shader, frag_shader)
+        super().__init__(render_mode)
 
     def _build_vertices(self):
         if not self.func_str.strip():

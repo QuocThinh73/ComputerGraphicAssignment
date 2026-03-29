@@ -1,4 +1,4 @@
-from ..base_state import BaseState, FloatParam, ColorParam
+from ..base_state import BaseState, FloatParam
 from configs import *
 
 
@@ -6,6 +6,5 @@ class CircleState(BaseState):
     def __init__(self):
         super().__init__("Circle")
         self.params = {
-            "radius": FloatParam("Radius", 0.5),
-            "color": ColorParam("Color", DEFAULT_COLOR),
+            "radius": FloatParam("Radius", DEFAULT_CIRCLE_RADIUS),
         }

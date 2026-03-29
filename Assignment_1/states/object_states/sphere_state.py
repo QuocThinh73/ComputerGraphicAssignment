@@ -1,4 +1,4 @@
-from ..base_state import BaseState, FloatParam, IntParam, ColorParam
+from ..base_state import BaseState, FloatParam, IntParam
 from configs import *
 
 
@@ -9,7 +9,6 @@ class Sphere1State(BaseState):
             "radius": FloatParam("Radius", DEFAULT_SPHERE1_RADIUS),
             "sectors": IntParam("Sectors", DEFAULT_SPHERE1_SECTORS, 18, 360),
             "stacks": IntParam("Stacks", DEFAULT_SPHERE1_STACKS, 18, 360),
-            "color": ColorParam("Color", DEFAULT_COLOR),
         }
 
 
@@ -19,7 +18,6 @@ class Sphere2State(BaseState):
         self.params = {
             "radius": FloatParam("Radius", DEFAULT_SPHERE2_RADIUS),
             "segments": IntParam("Segments", DEFAULT_SPHERE2_SEGMENTS, 1, 10),
-            "color": ColorParam("Color", DEFAULT_COLOR),
         }
 
 
@@ -29,5 +27,4 @@ class Sphere3State(BaseState):
         self.params = {
             "radius": FloatParam("Radius", DEFAULT_SPHERE3_RADIUS),
             "subdivisions": IntParam("Subdivisions", DEFAULT_SPHERE3_SUBDIVISIONS, 0, 10),
-            "color": ColorParam("Color", DEFAULT_COLOR),
         }

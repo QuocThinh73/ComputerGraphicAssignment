@@ -4,18 +4,13 @@ from ..base_model import BaseModel
 
 
 class CubeModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, width, height, depth, color, diffuse, specular, ambient, shininess, texture_path):
+    def __init__(self, width, height, depth, **kwargs):
         self.width = width
         self.height = height
         self.depth = depth
-        self.color = color
-        self.diffuse = diffuse
-        self.specular = specular
-        self.ambient = ambient
-        self.shininess = shininess
-        self.texture_path = texture_path
-        super().__init__(vert_shader, frag_shader)
         
+        super().__init__(**kwargs)
+
     def _build_vertices(self):
         w, h, d = self.width / 2.0, self.height / 2.0, self.depth / 2.0
         
@@ -63,10 +58,9 @@ class CubeModel(BaseModel):
         )
 
     def _build_colors(self):
-        shader_name = self.vert_shader.lower()
-        if 'gouraud' in shader_name or 'phong' in shader_name:
+        if self.render_mode in ["Gouraud", "Phong"]:
             self.colors = np.zeros_like(self.vertices, dtype=np.float32)
-        elif 'flat' in shader_name:
+        elif self.render_mode == "Flat":
             self.colors = np.tile(self.color, (24, 1)).astype(np.float32)
         else:
             cA = [1.0, 0.0, 0.0]
@@ -88,16 +82,17 @@ class CubeModel(BaseModel):
             ], dtype=np.float32)
             
     def _build_texcoords(self):
-        uv_00 = [0.0, 0.0]
-        uv_10 = [1.0, 0.0]
-        uv_11 = [1.0, 1.0]
-        uv_01 = [0.0, 1.0]
-        
-        uv_face = [uv_00, uv_10, uv_11, uv_01]
-        
-        texcoords = uv_face * 6
-        
-        self.texcoords = np.array(texcoords, dtype=np.float32)
+        if self.render_mode == "Texture":
+            uv_00 = [0.0, 0.0]
+            uv_10 = [1.0, 0.0]
+            uv_11 = [1.0, 1.0]
+            uv_01 = [0.0, 1.0]
+            
+            uv_face = [uv_00, uv_10, uv_11, uv_01]
+            
+            texcoords = uv_face * 6
+            
+            self.texcoords = np.array(texcoords, dtype=np.float32)
         
     def _draw_model(self):
         GL.glDrawElements(GL.GL_TRIANGLES, self.indices.shape[0], GL.GL_UNSIGNED_INT, None)

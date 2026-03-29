@@ -4,12 +4,11 @@ from ..base_model import BaseModel
 
 
 class CircleModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, radius, color):
+    def __init__(self, radius, **kwargs):
         self.radius = radius
         self.num_points = 360
-        self.color = color
-        super().__init__(vert_shader, frag_shader)
-        
+        super().__init__(**kwargs)
+
     def _build_vertices(self):
         vertices = [
             [0, 0, 0] # center

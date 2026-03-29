@@ -1,4 +1,4 @@
-from ..base_state import BaseState, FloatParam, IntParam, ColorParam
+from ..base_state import BaseState, FloatParam, IntParam
 from configs import *
 
 
@@ -9,5 +9,4 @@ class PrismState(BaseState):
             "radius": FloatParam("Radius", DEFAULT_PRISM_RADIUS),
             "height": FloatParam("Height", DEFAULT_PRISM_HEIGHT),
             "num_sides": IntParam("Num sides", DEFAULT_PRISM_NUM_SIDES, 3, 12),
-            "color": ColorParam("Color", DEFAULT_COLOR),
         }

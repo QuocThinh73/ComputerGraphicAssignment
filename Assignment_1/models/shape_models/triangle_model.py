@@ -4,12 +4,11 @@ from ..base_model import BaseModel
 
 
 class TriangleModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, base, height, color):
+    def __init__(self, base, height, **kwargs):
         self.base = base
         self.height = height
-        self.color = color
-        super().__init__(vert_shader, frag_shader)
-        
+        super().__init__(**kwargs)
+
     def _build_vertices(self):
         b, h = self.base / 2.0, self.height / 2.0
         self.vertices = np.array([
