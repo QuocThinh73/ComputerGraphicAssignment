@@ -84,17 +84,13 @@ class CubeModel(BaseModel):
             ], dtype=np.float32)
             
     def _build_texcoords(self):
-        # Tọa độ UV chuẩn cho 1 hình vuông (4 góc)
-        # Điểm (0,0) là góc dưới trái ảnh, (1,1) là góc trên phải
         uv_00 = [0.0, 0.0]
         uv_10 = [1.0, 0.0]
         uv_11 = [1.0, 1.0]
         uv_01 = [0.0, 1.0]
         
-        # Mỗi mặt gồm 4 đỉnh, ta map ảnh trọn vẹn lên từng mặt
         uv_face = [uv_00, uv_10, uv_11, uv_01]
         
-        # Khối lập phương có 6 mặt, lặp lại 6 lần
         texcoords = uv_face * 6
         
         self.texcoords = np.array(texcoords, dtype=np.float32)

@@ -43,22 +43,25 @@ class BaseModel:
         # setup VAO
         self.vao.add_vbo(0, self.vertices, ncomponents=3, stride=0, offset=None)
         self.vao.add_vbo(1, self.colors, ncomponents=3, stride=0, offset=None)
-        self.vao.add_vbo(2, self.normals, ncomponents=3, stride=0, offset=None)
+        
+        if hasattr(self, 'normals') and self.normals is not None and len(self.normals) > 0:
+            self.vao.add_vbo(2, self.normals, ncomponents=3, stride=0, offset=None)
             
-        if self.texcoords is not None:
+        if hasattr(self, 'texcoords') and self.texcoords is not None and len(self.texcoords) > 0:
             self.vao.add_vbo(3, self.texcoords, ncomponents=2, dtype=GL.GL_FLOAT)
 
         # setup EBO
         if self.indices is not None:
             self.vao.add_ebo(self.indices)
             
-        if hasattr(self, 'texture_path') and self.texture_path is not None:
+        tex_path = getattr(self, 'texture_path', None)
+        if tex_path and "texture" in self.vert_shader.lower() and tex_path.strip() != "":
             self.umanager = UManager(self.shader)
-            self.umanager.setup_texture("texture1", self.texture_path)
+            self.umanager.setup_texture("texture1", tex_path)
 
         return self
 
-    def draw(self, projection, view, model):
+    def draw(self, projection, view, model, lights=None):
         GL.glUseProgram(self.shader.render_idx)
         modelview = view @ model
 
@@ -66,9 +69,9 @@ class BaseModel:
         self.uma.upload_uniform_matrix4fv(modelview, 'modelview', True)
         
         if 'gouraud' in self.vert_shader.lower():
-            self.lighting.setup_gouraud()
+            self.lighting.setup_gouraud(lights=lights)
         elif 'phong' in self.vert_shader.lower():
-            self.lighting.setup_phong(mode=1)
+            self.lighting.setup_phong(lights=lights, mode=1)
         
         self.vao.activate()
         

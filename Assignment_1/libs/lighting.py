@@ -15,7 +15,8 @@ class Light:
                  diffuse: Union[Tuple[float, float, float], np.ndarray] = (0.9, 0.4, 0.6),
                  specular: Union[Tuple[float, float, float], np.ndarray] = (0.9, 0.4, 0.6),
                  ambient: Union[Tuple[float, float, float], np.ndarray] = (0.9, 0.4, 0.6),
-                 position: Union[Tuple[float, float, float], np.ndarray] = (0, 0.5, 0.9)):
+                 position: Union[Tuple[float, float, float], np.ndarray] = (0, 0.5, 0.9),
+                 enabled: bool = True):
         """
         Initialize a light source.
         
@@ -29,6 +30,7 @@ class Light:
         self.specular = np.array(specular, dtype=np.float32)
         self.ambient = np.array(ambient, dtype=np.float32)
         self.position = np.array(position, dtype=np.float32)
+        self.enabled = enabled
     
     @classmethod
     def default(cls):
@@ -80,10 +82,10 @@ class LightingManager:
     )
     
     DEFAULT_MATERIAL = Material(
-        diffuse=(0.6, 0.4, 0.7),
-        specular=(0.6, 0.4, 0.7),
-        ambient=(0.6, 0.4, 0.7),
-        shininess=100.0
+        diffuse=(0.0, 0.5, 0.8),
+        specular=(1.0, 1.0, 1.0),
+        ambient=(0.0, 0.1, 0.2),
+        shininess=32.0
     )
     
     def __init__(self, uma):
@@ -96,7 +98,7 @@ class LightingManager:
         self.uma = uma
     
     def setup_phong(self, 
-                    light: Optional[Light] = None,
+                    lights: Optional[list[Light]] = None,
                     material: Optional[Material] = None,
                     mode: int = 1):
         """
@@ -107,29 +109,29 @@ class LightingManager:
             material: Material properties (uses default if None)
             mode: Rendering mode (default: 1)
         """
-        light = light or self.DEFAULT_LIGHT
+        if lights is None:
+            lights = []
+            
         material = material or self.DEFAULT_MATERIAL
         
-        # Create I_light matrix: [diffuse, specular, ambient]
-        I_light = np.array([
-            light.diffuse,
-            light.specular,
-            light.ambient
-        ], dtype=np.float32)
-        
-        # Create K_materials matrix: [diffuse, specular, ambient]
         K_materials = np.array([
-            material.diffuse,
-            material.specular,
-            material.ambient
+            material.diffuse, material.specular, material.ambient
         ], dtype=np.float32)
-        
-        # Upload uniforms
-        self.uma.upload_uniform_matrix3fv(I_light, 'I_light', False)
-        self.uma.upload_uniform_vector3fv(light.position, 'light_pos')
         self.uma.upload_uniform_matrix3fv(K_materials, 'K_materials', False)
         self.uma.upload_uniform_scalar1f(material.shininess, 'shininess')
         self.uma.upload_uniform_scalar1i(mode, 'mode')
+        
+        num_lights = len(lights)
+        self.uma.upload_uniform_scalar1i(num_lights, 'num_lights')
+        
+        for i in range(num_lights):
+            l = lights[i]
+            I_light = np.array([l.diffuse, l.specular, l.ambient], dtype=np.float32)
+            self.uma.upload_uniform_matrix3fv(I_light, f'I_lights[{i}]', False)
+            self.uma.upload_uniform_vector3fv(l.position, f'light_positions[{i}]')
+            
+            is_on = 1 if getattr(l, 'enabled', True) else 0
+            self.uma.upload_uniform_scalar1i(is_on, f'light_enabled[{i}]')
     
     def setup_phong_multi_material(self,
                                     light: Optional[Light] = None,
@@ -186,39 +188,32 @@ class LightingManager:
         self.uma.upload_uniform_scalar1i(mode, 'mode')
     
     def setup_gouraud(self,
-                     light: Optional[Light] = None,
+                     lights: Optional[list[Light]] = None,
                      material: Optional[Material] = None,
                      shininess: float = 100.0):
-        """
-        Setup Gouraud lighting uniforms (for vertex shader).
         
-        Gouraud shading computes lighting per-vertex in the vertex shader,
-        then interpolates the result in the fragment shader.
-        
-        Args:
-            light: Light source (uses default if None)
-            material: Material properties (uses default if None)
-            shininess: Shininess exponent for specular highlights
-        """
-        light = light or self.DEFAULT_LIGHT
+        if lights is None:
+            lights = []
+            
         material = material or self.DEFAULT_MATERIAL
         
-        # Create I_light matrix: [diffuse, specular, ambient]
-        I_light = np.array([
-            light.diffuse,
-            light.specular,
-            light.ambient
-        ], dtype=np.float32)
-        
-        # Create K_materials matrix: [diffuse, specular, ambient]
         K_materials = np.array([
             material.diffuse,
             material.specular,
             material.ambient
         ], dtype=np.float32)
         
-        # Upload uniforms (these will be used in vertex shader)
-        self.uma.upload_uniform_matrix3fv(I_light, 'I_light', False)
-        self.uma.upload_uniform_vector3fv(light.position, 'light_pos')
         self.uma.upload_uniform_matrix3fv(K_materials, 'K_materials', False)
         self.uma.upload_uniform_scalar1f(shininess, 'shininess')
+        
+        num_lights = len(lights)
+        self.uma.upload_uniform_scalar1i(num_lights, 'num_lights')
+        
+        for i in range(num_lights):
+            l = lights[i]
+            I_light = np.array([l.diffuse, l.specular, l.ambient], dtype=np.float32)
+            self.uma.upload_uniform_matrix3fv(I_light, f'I_lights[{i}]', False)
+            self.uma.upload_uniform_vector3fv(l.position, f'light_positions[{i}]')
+            
+            is_on = 1 if getattr(l, 'enabled', True) else 0
+            self.uma.upload_uniform_scalar1i(is_on, f'light_enabled[{i}]')

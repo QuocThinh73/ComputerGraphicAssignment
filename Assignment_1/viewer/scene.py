@@ -111,6 +111,6 @@ class Scene:
                 else:
                     GL.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL)
                 
-                obj["model"].draw(projection, view, model_matrix)
+                obj["model"].draw(projection, view, model_matrix, lights=self.state.lights)
                 
                 GL.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL)

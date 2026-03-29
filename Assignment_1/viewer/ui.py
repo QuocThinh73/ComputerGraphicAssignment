@@ -135,3 +135,33 @@ class ViewerUI:
                 self.state.remove_camera(self.state.active_camera_idx)
 
         imgui.end()
+        
+        imgui.begin("Lighting Manager")
+        
+        if imgui.button("Add New Light (White)"):
+            self.state.add_light()
+            # Kích hoạt vẽ lại scene
+            for obj in self.state.scene_objects:
+                obj["need_rebuild"] = True
+
+        imgui.separator()
+
+        for i, light in enumerate(self.state.lights):
+            imgui.push_id(str(i)) # Chống trùng ID UI
+            
+            # Checkbox Bật/Tắt
+            changed_on, new_on = imgui.checkbox(f"Light {i+1}", getattr(light, 'enabled', True))
+            if changed_on:
+                light.enabled = new_on
+                for obj in self.state.scene_objects: obj["need_rebuild"] = True
+                
+            imgui.same_line()
+            
+            # Nút xóa đèn
+            if imgui.button("Delete"):
+                self.state.remove_light(i)
+                for obj in self.state.scene_objects: obj["need_rebuild"] = True
+                
+            imgui.pop_id()
+            
+        imgui.end()

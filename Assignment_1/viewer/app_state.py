@@ -1,3 +1,4 @@
+from libs.lighting import Light
 from libs.camera import Camera
 from states import *
 
@@ -43,7 +44,9 @@ class AppState:
         self.grid_need_rebuild = False
         
         self.cameras = []
-        self.active_camera_idx = 0
+        self.add_camera()
+        
+        self.lights = []
 
     def add_object(self, obj_type):
         if obj_type in self.blueprints:
@@ -75,3 +78,17 @@ class AppState:
             self.cameras.pop(idx)
             if self.active_camera_idx >= len(self.cameras):
                 self.active_camera_idx = len(self.cameras) - 1
+                
+    def add_light(self):
+        new_light = Light(
+            diffuse=(1.0, 1.0, 1.0),
+            specular=(1.0, 1.0, 1.0),
+            ambient=(0.1, 0.1, 0.1),
+            position=(0.0, 2.5, 4.33)
+        )
+        new_light.enabled = True
+        self.lights.append(new_light)
+
+    def remove_light(self, idx):
+        if 0 <= idx < len(self.lights):
+            self.lights.pop(idx)
