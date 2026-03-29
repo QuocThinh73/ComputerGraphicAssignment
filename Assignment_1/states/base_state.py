@@ -42,6 +42,8 @@ class BaseState:
         
         self.shader_names = ["Flat", "ColorInterp", "Phong", "Gouraud"]
         self.shader_index = 0
+        
+        self.is_wireframe = False
 
     def get_params_values(self):
         return {key: param.value for key, param in self.params.items()}

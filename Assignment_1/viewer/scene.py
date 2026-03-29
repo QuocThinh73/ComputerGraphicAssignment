@@ -1,6 +1,7 @@
 import numpy as np
 from viewer.model_factory import build_shape, SHADER_FILES
 from models.utils.grid_floor_model import GridFloorModel
+import OpenGL.GL as GL
 
 
 def create_translation_matrix(x, y, z):
@@ -105,4 +106,11 @@ class Scene:
                 
                 model_matrix = T @ Ry @ Rx @ Rz
                 
+                if obj["state"].is_wireframe:
+                    GL.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_LINE)
+                else:
+                    GL.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL)
+                
                 obj["model"].draw(projection, view, model_matrix)
+                
+                GL.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL)

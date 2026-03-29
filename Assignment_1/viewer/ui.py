@@ -72,9 +72,13 @@ class ViewerUI:
                         obj_state.shader_index = new_shader_idx
                         selected_obj["need_rebuild"] = True
                         
-                    current_shader = obj_state.shader_names[obj_state.shader_index].lower()
+                    changed_wf, new_wf = imgui.checkbox(f"Wireframe Mode##wf_{selected_obj['id']}", obj_state.is_wireframe)
+                    if changed_wf:
+                        obj_state.is_wireframe = new_wf
                         
                     imgui.separator()
+                    
+                    current_shader = obj_state.shader_names[obj_state.shader_index].lower()
                     
                     for param_id, param in obj_state.params.items():
                         changed_p = False
