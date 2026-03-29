@@ -111,3 +111,35 @@ class ViewerUI:
             imgui.text_disabled("Select an object to edit its properties.")
 
         imgui.end()
+        
+        imgui.begin("Camera Manager")
+        
+        if imgui.button("Add New Camera"):
+            from libs.camera import Camera
+            
+            new_cam = Camera(yaw=0.0, pitch=30.0, distance=5.0)
+            
+            self.state.cameras.append(new_cam)
+            self.state.active_camera_idx = len(self.state.cameras) - 1
+
+        imgui.separator()
+
+        imgui.text("Available Cameras:")
+        imgui.begin_child("CameraList", 0, 150, border=True)
+        
+        for i, cam in enumerate(self.state.cameras):
+            is_selected = (i == self.state.active_camera_idx)
+            clicked, _ = imgui.selectable(f"Camera {i+1}##cam_{i}", is_selected)
+            if clicked:
+                self.state.active_camera_idx = i
+                
+        imgui.end_child()
+
+        if len(self.state.cameras) > 1:
+            if imgui.button("Delete Active Camera"):
+                self.state.cameras.pop(self.state.active_camera_idx)
+                self.state.active_camera_idx = max(0, self.state.active_camera_idx - 1)
+        else:
+            imgui.text_disabled("Cannot delete the last camera.")
+
+        imgui.end()

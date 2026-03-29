@@ -40,6 +40,9 @@ class AppState:
         self.show_grid_z = True
         
         self.grid_need_rebuild = False
+        
+        self.cameras = []
+        self.active_camera_idx = 0
 
     def add_object(self, obj_type):
         if obj_type in self.blueprints:

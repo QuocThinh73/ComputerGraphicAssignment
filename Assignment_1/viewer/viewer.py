@@ -50,7 +50,8 @@ class Viewer:
         glfw.set_scroll_callback(self.win, self.on_scroll)
         glfw.set_char_callback(self.win, self.on_char)
         
-        self.trackball = Camera(yaw=0.0, pitch=30.0, distance=5.0)
+        self.state.cameras.append(Camera(yaw=0.0, pitch=30.0, distance=5.0))
+        self.state.active_camera_idx = 0
 
     def _init_opengl(self):
         print(
@@ -84,6 +85,8 @@ class Viewer:
         if action == glfw.PRESS or action == glfw.REPEAT:
             if key == glfw.KEY_ESCAPE or key == glfw.KEY_Q:
                 glfw.set_window_should_close(self.win, True)
+            elif key == glfw.KEY_TAB and action == glfw.PRESS:
+                self.state.active_camera_idx = (self.state.active_camera_idx + 1) % len(self.state.cameras)
 
     def on_mouse_move(self, win, xpos, ypos):
         self.imgui_renderer.mouse_callback(win, xpos, ypos)
@@ -95,12 +98,14 @@ class Viewer:
 
         old = self.mouse
         self.mouse = (xpos, glfw.get_window_size(win)[1] - ypos)
+        
+        active_cam = self.state.cameras[self.state.active_camera_idx]
 
         if glfw.get_mouse_button(win, glfw.MOUSE_BUTTON_LEFT):
-            self.trackball.drag(old, self.mouse, glfw.get_window_size(win))
+            active_cam.drag(old, self.mouse, glfw.get_window_size(win))
 
         if glfw.get_mouse_button(win, glfw.MOUSE_BUTTON_RIGHT):
-            self.trackball.pan(old, self.mouse)
+            active_cam.pan(old, self.mouse)
 
     def on_scroll(self, win, dx, dy):
         self.imgui_renderer.scroll_callback(win, dx, dy)
@@ -109,7 +114,8 @@ class Viewer:
         if io.want_capture_mouse:
             return
 
-        self.trackball.zoom(dy, glfw.get_window_size(win)[1])
+        active_cam = self.state.cameras[self.state.active_camera_idx]
+        active_cam.zoom(dy, glfw.get_window_size(win)[1])
         
     def on_char(self, win, codepoint):
         self.imgui_renderer.char_callback(win, codepoint)
@@ -127,8 +133,10 @@ class Viewer:
             GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
 
             win_size = glfw.get_window_size(self.win)
-            view = self.trackball.view_matrix()
-            projection = self.trackball.projection_matrix(win_size)
+            
+            active_cam = self.state.cameras[self.state.active_camera_idx]
+            view = active_cam.view_matrix()
+            projection = active_cam.projection_matrix(win_size)
 
             self.scene.draw(projection, view)
 
