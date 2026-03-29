@@ -13,6 +13,7 @@ uniform vec3 light_pos;
 
 out vec3 colorInterp;  // Interpolated color (lighting computed per-vertex)
 
+
 void main(){
   // Transform vertex position to world space
   vec4 vertPos4 = modelview * vec4(position, 1.0);

@@ -4,11 +4,12 @@ from ..base_model import BaseModel
 
 
 class CubeModel(BaseModel):
-    def __init__(self, vert_shader, frag_shader, width, height, depth, color):
+    def __init__(self, vert_shader, frag_shader, width, height, depth, color, texture_path=None):
         self.width = width
         self.height = height
         self.depth = depth
         self.color = color
+        self.texture_path = texture_path
         super().__init__(vert_shader, frag_shader)
         
     def _build_vertices(self):
@@ -81,6 +82,22 @@ class CubeModel(BaseModel):
                 cE, cF, cG, cH,  # top
                 cD, cC, cB, cA   # bottom
             ], dtype=np.float32)
+            
+    def _build_texcoords(self):
+        # Tọa độ UV chuẩn cho 1 hình vuông (4 góc)
+        # Điểm (0,0) là góc dưới trái ảnh, (1,1) là góc trên phải
+        uv_00 = [0.0, 0.0]
+        uv_10 = [1.0, 0.0]
+        uv_11 = [1.0, 1.0]
+        uv_01 = [0.0, 1.0]
+        
+        # Mỗi mặt gồm 4 đỉnh, ta map ảnh trọn vẹn lên từng mặt
+        uv_face = [uv_00, uv_10, uv_11, uv_01]
+        
+        # Khối lập phương có 6 mặt, lặp lại 6 lần
+        texcoords = uv_face * 6
+        
+        self.texcoords = np.array(texcoords, dtype=np.float32)
         
     def _draw_model(self):
         GL.glDrawElements(GL.GL_TRIANGLES, self.indices.shape[0], GL.GL_UNSIGNED_INT, None)

@@ -13,6 +13,7 @@ uniform float shininess; // Shininess
 uniform vec3 light_pos; // Light position
 out vec4 fragColor;
 
+
 void main() {
   vec3 N = normalize(normal_interp);
   vec3 L = normalize(light_pos - vertPos);

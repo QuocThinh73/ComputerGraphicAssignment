@@ -50,6 +50,10 @@ SHADER_FILES = {
         str(SHADERS_DIR / "phong.vert"),
         str(SHADERS_DIR / "phong.frag"),
     ),
+    "Texture": (
+        str(SHADERS_DIR / "texture.vert"),
+        str(SHADERS_DIR / "texture.frag"),
+    )
 }
 
 

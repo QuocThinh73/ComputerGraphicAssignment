@@ -16,6 +16,7 @@ class BaseModel:
         self._build_indices()
         self._build_normals()
         self._build_colors()
+        self._build_texcoords()
 
         self.vao = VAO()
 
@@ -34,18 +35,26 @@ class BaseModel:
 
     def _build_colors(self):
         self.colors = None
+        
+    def _build_texcoords(self):
+        self.texcoords = None
 
     def setup(self):
         # setup VAO
         self.vao.add_vbo(0, self.vertices, ncomponents=3, stride=0, offset=None)
         self.vao.add_vbo(1, self.colors, ncomponents=3, stride=0, offset=None)
-        
-        # Add normals for Gouraud/Phong shading (if shader needs it)
-        if 'gouraud' in self.vert_shader.lower() or 'phong' in self.vert_shader.lower():
-            self.vao.add_vbo(2, self.normals, ncomponents=3, stride=0, offset=None)
+        self.vao.add_vbo(2, self.normals, ncomponents=3, stride=0, offset=None)
+            
+        if self.texcoords is not None:
+            self.vao.add_vbo(3, self.texcoords, ncomponents=2, dtype=GL.GL_FLOAT)
 
         # setup EBO
-        self.vao.add_ebo(self.indices)
+        if self.indices is not None:
+            self.vao.add_ebo(self.indices)
+            
+        if hasattr(self, 'texture_path') and self.texture_path is not None:
+            self.umanager = UManager(self.shader)
+            self.umanager.setup_texture("texture1", self.texture_path)
 
         return self
 
