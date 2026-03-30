@@ -35,6 +35,10 @@ class FunctionGraphModel(BaseModel):
             
         except Exception as e:
             return lambda x, y: np.zeros_like(x)
+        
+    def get_z(self, x, y):
+        z = self.func(x, y)
+        return float(z)
 
     def _build_vertices(self):
         if not self.func_str.strip():

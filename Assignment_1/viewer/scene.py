@@ -120,25 +120,40 @@ class Scene:
     # ==========================================
     def _init_sgd_visualizer(self):
         self.sgd_surface_model = None
+        
+        self.sgd_agent_model = build_shape(
+            "Sphere1", render_mode="ColorInterp",
+            radius=0.15, sectors=24, stacks=24
+        )
 
     def _update_sgd_visualizer(self):
-        if self.state.sgd_surface_need_rebuild:
+        # 1. Rebuild mặt phẳng hoặc Reset vị trí viên bi
+        if self.state.sgd_surface_need_rebuild or self.state.sgd_reset_needed:
             func_data = self.state.sgd_functions[self.state.sgd_selected_func_idx]
             
-            self.sgd_surface_model = FunctionGraphModel(
-                func_str=func_data["formula"],
-                min_x=func_data["min_x"],
-                max_x=func_data["max_x"],
-                min_y=func_data["min_y"],
-                max_y=func_data["max_y"],
-                delta_x=func_data["delta"],
-                delta_y=func_data["delta"],
-                render_mode="ColorInterp" # Sử dụng chế độ bản đồ nhiệt độ cao (Heatmap)
-            )
-            # Không quên gọi setup() để đẩy data xuống GPU
-            self.sgd_surface_model.setup() 
-            
-            self.state.sgd_surface_need_rebuild = False
+            # Xây lại đồ thị nếu cần
+            if self.state.sgd_surface_need_rebuild:
+                self.sgd_surface_model = FunctionGraphModel(
+                    func_str=func_data["formula"],
+                    min_x=func_data["min_x"], max_x=func_data["max_x"],
+                    min_y=func_data["min_y"], max_y=func_data["max_y"],
+                    delta_x=func_data["delta"], delta_y=func_data["delta"],
+                    render_mode="ColorInterp" 
+                )
+                self.sgd_surface_model.setup() 
+                self.state.sgd_surface_need_rebuild = False
+
+            # Random vị trí ban đầu cho viên bi
+            if self.state.sgd_reset_needed and self.sgd_surface_model is not None:
+                import random
+                # Khởi tạo X, Y ngẫu nhiên trong phạm vi của đồ thị
+                self.state.sgd_current_x = random.uniform(func_data["min_x"], func_data["max_x"])
+                self.state.sgd_current_y = random.uniform(func_data["min_y"], func_data["max_y"])
+                
+                # Tính độ cao Z tương ứng ngay tại X, Y đó
+                self.state.sgd_current_z = self.sgd_surface_model.get_z(self.state.sgd_current_x, self.state.sgd_current_y)
+                
+                self.state.sgd_reset_needed = False
 
         # 2. Logic cập nhật thuật toán SGD khi đang Play
         if self.state.sgd_is_playing:
@@ -146,10 +161,7 @@ class Scene:
             pass
 
     def _draw_sgd_visualizer(self, projection, view):
-        # Thiết lập ma trận biến đổi mặc định nằm ở gốc tọa độ
         model_matrix = np.eye(4, dtype=np.float32)
-        
-        # Cấu hình render polygon hai mặt (để nhìn được cả từ dưới lên)
         GL.glDisable(GL.GL_CULL_FACE)
         
         # Vẽ mặt phẳng đồ thị
@@ -158,4 +170,12 @@ class Scene:
             
         GL.glEnable(GL.GL_CULL_FACE)
         
-        # TODO: Vẽ viên bi (tham số hiện tại) tại vị trí (x, y, z)
+        # Vẽ viên bi SGD (Agent)
+        if hasattr(self, 'sgd_agent_model') and self.sgd_agent_model is not None:
+            # Dịch chuyển viên bi đến tọa độ hiện tại
+            agent_matrix = create_translation_matrix(
+                self.state.sgd_current_x, 
+                self.state.sgd_current_y, 
+                self.state.sgd_current_z
+            )
+            self.sgd_agent_model.draw(projection, view, agent_matrix, lights=None)

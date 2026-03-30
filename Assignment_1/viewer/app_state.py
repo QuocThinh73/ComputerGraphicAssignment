@@ -95,6 +95,11 @@ class AppState:
         self.sgd_sim_speed = 1.0
         
         self.sgd_is_playing = False
+        
+        self.sgd_current_x = 0.0
+        self.sgd_current_y = 0.0
+        self.sgd_current_z = 0.0
+        self.sgd_reset_needed = True
 
     def add_object(self, obj_type):
         if obj_type in self.blueprints:

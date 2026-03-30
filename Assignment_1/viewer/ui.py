@@ -294,7 +294,7 @@ class ViewerUI:
             # Nút Reset
             if imgui.button("Reset Position", width=120):
                 self.state.sgd_is_playing = False
-                # TODO: Hàm đưa tọa độ điểm về vị trí khởi tạo ban đầu
+                self.state.sgd_reset_needed = True
                 
             _, self.state.sgd_sim_speed = imgui.slider_float("Sim Speed", self.state.sgd_sim_speed, 0.1, 5.0, format="%.1fx")
             
