@@ -28,7 +28,7 @@ class ViewerUI:
 
     def _draw_scene_builder_ui(self):
         # ==========================================
-        # 1. SCENE MANAGER (Quản lý môi trường & Object)
+        # 1. SCENE MANAGER
         # ==========================================
         imgui.begin("Scene Manager")
         
@@ -46,15 +46,36 @@ class ViewerUI:
         
         imgui.separator()
 
-        imgui.text("Add Object:")
-        changed_type, new_type_idx = imgui.combo("##TypeSelect", self.state.selected_add_index, self.state.available_types)
-        if changed_type:
-            self.state.selected_add_index = new_type_idx
+        if imgui.button("Add New Object", width=-1):
+            imgui.open_popup("AddObjectPopup")
 
-        imgui.same_line()
-        if imgui.button("Add"):
-            selected_type = self.state.available_types[self.state.selected_add_index]
-            self.state.add_object(selected_type)
+        if imgui.begin_popup("AddObjectPopup"):
+            # 2D
+            if imgui.begin_menu("2D"):
+                shapes_2d = ["Triangle", "Rectangle", "Trapezium", "Pentagon", "Hexagon", "Circle", "Elip", "Star", "Arrow"]
+                for obj_type in shapes_2d:
+                    clicked, _ = imgui.menu_item(obj_type)
+                    if clicked:
+                        self.state.add_object(obj_type)
+                imgui.end_menu()
+                
+            # 3D
+            if imgui.begin_menu("3D"):
+                shapes_3d = ["Cube", "Cone", "TruncatedCone", "Cylinder", "Tetrahedron", "Torus", "Prism", "Sphere1", "Sphere2", "Sphere3"]
+                for obj_type in shapes_3d:
+                    clicked, _ = imgui.menu_item(obj_type)
+                    if clicked:
+                        self.state.add_object(obj_type)
+                imgui.end_menu()
+                
+            # Function Graph
+            if imgui.begin_menu("Function Graph"):
+                clicked, _ = imgui.menu_item("FunctionGraph")
+                if clicked:
+                    self.state.add_object("FunctionGraph")
+                imgui.end_menu()
+                
+            imgui.end_popup()
 
         imgui.separator()
 
@@ -78,7 +99,7 @@ class ViewerUI:
         imgui.separator()
 
         # ==========================================
-        # 2. SELECTED OBJECT DETAILS (Thông số Object)
+        # 2. SELECTED OBJECT DETAILS
         # ==========================================
         if self.state.selected_obj_id is not None:
             selected_obj = next((o for o in self.state.scene_objects if o["id"] == self.state.selected_obj_id), None)
@@ -86,7 +107,6 @@ class ViewerUI:
             if selected_obj:
                 obj_state = selected_obj["state"]
                 
-                # --- PHẦN TRANSFORM ---
                 if imgui.collapsing_header("Transform", flags=imgui.TREE_NODE_DEFAULT_OPEN)[0]:
                     for param_id, param in obj_state.transform_params.items():
                         unique_label = f"{param.label}##{param_id}_{selected_obj['id']}"
@@ -94,7 +114,6 @@ class ViewerUI:
                         if changed_p:
                             param.value = new_val
                 
-                # --- PHẦN PROPERTIES ---
                 if imgui.collapsing_header("Properties", flags=imgui.TREE_NODE_DEFAULT_OPEN)[0]:
                     
                     changed_rm, new_rm_idx = imgui.combo("Render Mode", obj_state.render_mode_idx, obj_state.render_modes)
@@ -109,8 +128,7 @@ class ViewerUI:
                     imgui.separator()
                     
                     current_mode = obj_state.render_modes[obj_state.render_mode_idx]
-                    
-                    # 2.1 Vẽ Tham Số Hình Học (Luôn hiện)
+                  
                     for param_id, param in obj_state.params.items():
                         unique_label = f"{param.label}##{param_id}_{selected_obj['id']}"
                         changed_p = False
@@ -120,6 +138,8 @@ class ViewerUI:
                             changed_p, new_val = imgui.slider_float(unique_label, param.value, param.min_val, param.max_val)
                         elif isinstance(param, IntParam):
                             changed_p, new_val = imgui.slider_int(unique_label, param.value, param.min_val, param.max_val)
+                        elif isinstance(param, StringParam):
+                            changed_p, new_val = imgui.input_text(unique_label, param.value, 256, flags=imgui.INPUT_TEXT_ENTER_RETURNS_TRUE)
                         
                         if changed_p:
                             param.value = new_val
@@ -127,11 +147,9 @@ class ViewerUI:
                             
                     imgui.separator()
                     
-                    # 2.2 Vẽ Tham Số Vật Liệu Tùy Thuộc Vào Render Mode
                     for param_id, param in obj_state.material_params.items():
                         is_lit = current_mode in ["Phong", "Gouraud"]
                         
-                        # Logic Ẩn/Hiện bảng thông số
                         if param_id == 'color' and is_lit: continue
                         if param_id == 'color' and current_mode == "Texture": continue
                         if param_id in ['diffuse', 'specular', 'ambient', 'shininess'] and not is_lit: continue
