@@ -9,6 +9,9 @@ class AppState:
         self.APP_MODE_SGD = 1
         self.current_app_mode = self.APP_MODE_SCENE
         
+        # ==========================================
+        # SCENE BUILDER MODE
+        # ==========================================
         self.blueprints = {
             # 2D
             "Triangle": TriangleState,
@@ -52,6 +55,45 @@ class AppState:
         self.add_camera()
         
         self.lights = []
+        
+        # ==========================================
+        # SGD VISUALIZER MODE
+        # ==========================================
+        self.sgd_functions = [
+            {
+                "name": "Quadratic 2D",
+                "formula": "x**2 + y**2",
+                "min_x": -2.0, "max_x": 2.0, "min_y": -2.0, "max_y": 2.0, "delta": 0.1
+            },
+            {
+                "name": "Himmelblau",
+                "formula": "(x**2 + y - 11)**2 + (x + y**2 - 7)**2",
+                "min_x": -2.0, "max_x": 2.0, "min_y": -2.0, "max_y": 2.0, "delta": 0.1
+            },
+            {
+                "name": "Rosenbrock (a=1, b=100)",
+                "formula": "(1 - x)**2 + 100 * (y - x**2)**2",
+                "min_x": -2.0, "max_x": 2.0, "min_y": -2.0, "max_y": 2.0, "delta": 0.1
+            },
+            {
+                "name": "Booth",
+                "formula": "(x + 2*y - 7)**2 + (2*x + y - 5)**2",
+                "min_x": -2.0, "max_x": 2.0, "min_y": -2.0, "max_y": 2.0, "delta": 0.1
+            }
+        ]
+        self.sgd_func_names = [f["name"] for f in self.sgd_functions]
+        self.sgd_selected_func_idx = 0
+        self.sgd_surface_need_rebuild = True
+        
+        self.sgd_algorithms = ["Gradient Descent", "SGD", "Mini-batch SGD", "Momentum", "Adam"]
+        self.sgd_algo_idx = 0
+        
+        self.sgd_learning_rate = 0.01
+        self.sgd_momentum = 0.9
+        self.sgd_epochs = 100
+        self.sgd_sim_speed = 1.0
+        
+        self.sgd_is_playing = False
 
     def add_object(self, obj_type):
         if obj_type in self.blueprints:

@@ -1,6 +1,6 @@
 import numpy as np
 from viewer.model_factory import build_shape
-from models.utils.grid_floor_model import GridFloorModel
+from models import GridFloorModel, FunctionGraphModel
 import OpenGL.GL as GL
 
 
@@ -119,13 +119,43 @@ class Scene:
     # SGD VISUALIZER MODE
     # ==========================================
     def _init_sgd_visualizer(self):
-        # TODO: Khởi tạo mô hình mặt phẳng đồ thị (FunctionGraphModel) và viên bi SGD
-        pass
+        self.sgd_surface_model = None
 
     def _update_sgd_visualizer(self):
-        # TODO: Cập nhật tọa độ của viên bi chạy theo thuật toán SGD
-        pass
+        if self.state.sgd_surface_need_rebuild:
+            func_data = self.state.sgd_functions[self.state.sgd_selected_func_idx]
+            
+            self.sgd_surface_model = FunctionGraphModel(
+                func_str=func_data["formula"],
+                min_x=func_data["min_x"],
+                max_x=func_data["max_x"],
+                min_y=func_data["min_y"],
+                max_y=func_data["max_y"],
+                delta_x=func_data["delta"],
+                delta_y=func_data["delta"],
+                render_mode="ColorInterp" # Sử dụng chế độ bản đồ nhiệt độ cao (Heatmap)
+            )
+            # Không quên gọi setup() để đẩy data xuống GPU
+            self.sgd_surface_model.setup() 
+            
+            self.state.sgd_surface_need_rebuild = False
+
+        # 2. Logic cập nhật thuật toán SGD khi đang Play
+        if self.state.sgd_is_playing:
+            # TODO: Tính toán Gradient và di chuyển tọa độ viên bi ở bước tiếp theo
+            pass
 
     def _draw_sgd_visualizer(self, projection, view):
-        # TODO: Vẽ hàm số và viên bi lên màn hình
-        pass
+        # Thiết lập ma trận biến đổi mặc định nằm ở gốc tọa độ
+        model_matrix = np.eye(4, dtype=np.float32)
+        
+        # Cấu hình render polygon hai mặt (để nhìn được cả từ dưới lên)
+        GL.glDisable(GL.GL_CULL_FACE)
+        
+        # Vẽ mặt phẳng đồ thị
+        if hasattr(self, 'sgd_surface_model') and self.sgd_surface_model is not None:
+            self.sgd_surface_model.draw(projection, view, model_matrix)
+            
+        GL.glEnable(GL.GL_CULL_FACE)
+        
+        # TODO: Vẽ viên bi (tham số hiện tại) tại vị trí (x, y, z)

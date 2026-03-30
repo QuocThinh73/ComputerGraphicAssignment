@@ -48,7 +48,7 @@ class BaseState:
         }
         
         self.render_modes = ["Flat", "ColorInterp", "Phong", "Gouraud", "Texture"]
-        self.render_mode_idx = 0
+        self.render_mode_idx = 1
         
         self.is_wireframe = False
 

@@ -6,6 +6,7 @@ from ..base_model import BaseModel
 class FunctionGraphModel(BaseModel):
     def __init__(self, func_str, min_x, max_x, min_y, max_y, delta_x, delta_y, **kwargs):
         self.func_str = func_str
+        self.func = self._parse_function(self.func_str)
         self.min_x = min_x
         self.max_x = max_x
         self.min_y = min_y
@@ -13,6 +14,27 @@ class FunctionGraphModel(BaseModel):
         self.delta_x = delta_x
         self.delta_y = delta_y
         super().__init__(**kwargs)
+        
+    def _parse_function(self, func_str):
+        if not func_str.strip():
+            return lambda x, y: np.zeros_like(x)
+            
+        math_env = {
+            "sin": np.sin, "cos": np.cos, "tan": np.tan,
+            "exp": np.exp, "log": np.log, "sqrt": np.sqrt,
+            "pi": np.pi, "e": np.e, "abs": np.abs,
+        }
+        
+        try:
+            lambda_str = f"lambda x, y: {func_str}"
+            
+            func = eval(lambda_str, {"__builtins__": None}, math_env)
+            
+            func(np.array([0.1]), np.array([0.1])) 
+            return func
+            
+        except Exception as e:
+            return lambda x, y: np.zeros_like(x)
 
     def _build_vertices(self):
         if not self.func_str.strip():
@@ -28,29 +50,10 @@ class FunctionGraphModel(BaseModel):
 
         x, y = np.meshgrid(x_vals, y_vals, indexing='ij')
         
-        math_env = {
-            "sin": np.sin,
-            "cos": np.cos,
-            "tan": np.tan,
-            "exp": np.exp,
-            "log": np.log,
-            "sqrt": np.sqrt,
-            "pi": np.pi,
-            "e": np.e,
-            "abs": np.abs,
-            "x": x,
-            "y": y
-        }
+        z = self.func(x, y)
         
-        try:
-            z = eval(self.func_str, {"__builtins__": None}, math_env)
-            
-            if isinstance(z, (int, float)):
-                z = np.full_like(x, float(z))
-                
-        except Exception as e:
-            print(f"Lỗi cú pháp hàm số: {e}")
-            z = np.zeros_like(x)
+        if np.isscalar(z):
+            z = np.full_like(x, float(z))
 
         self.Z_vals = z
         self.vertices = np.stack([x.ravel(), y.ravel(), z.ravel()], axis=1).astype(np.float32)
@@ -94,12 +97,15 @@ class FunctionGraphModel(BaseModel):
             self.colors = np.array([], dtype=np.float32)
             return
         
-        shader_name = self.vert_shader.lower()
-        if 'gouraud' in shader_name or 'phong' in shader_name:
+        if self.render_mode in ["Gouraud", "Phong"]:
             self.colors = np.zeros_like(self.vertices, dtype=np.float32)
             
-        elif 'flat' in shader_name:
-            self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
+        elif self.render_mode == "Flat":
+            flat_color = getattr(self, 'color', (1.0, 1.0, 1.0))
+            self.colors = np.tile(flat_color, (len(self.vertices), 1)).astype(np.float32)
+            
+        elif self.render_mode == "Texture":
+            self.colors = np.ones_like(self.vertices, dtype=np.float32)
             
         else:
             z_vals = self.vertices[:, 2]

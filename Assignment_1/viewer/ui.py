@@ -33,7 +33,7 @@ class ViewerUI:
         imgui.begin("Scene Manager")
         
         if imgui.collapsing_header("Environment (Grid)", flags=imgui.TREE_NODE_DEFAULT_OPEN)[0]:
-            imgui.text("Toggle Axes:")
+            imgui.text("Axes:")
             
             changed_x, self.state.show_grid_x = imgui.checkbox("X", self.state.show_grid_x)
             imgui.same_line()
@@ -69,11 +69,9 @@ class ViewerUI:
                 imgui.end_menu()
                 
             # Function Graph
-            if imgui.begin_menu("Function Graph"):
-                clicked, _ = imgui.menu_item("FunctionGraph")
-                if clicked:
-                    self.state.add_object("FunctionGraph")
-                imgui.end_menu()
+            clicked, _ = imgui.menu_item("Function Graph")
+            if clicked:
+                self.state.add_object("FunctionGraph")
                 
             imgui.end_popup()
 
@@ -254,5 +252,50 @@ class ViewerUI:
         imgui.end()
         
     def _draw_sgd_visualizer_ui(self):
-        imgui.begin("SGD Optimization Settings")
+        imgui.begin("SGD Control Panel", flags=imgui.WINDOW_ALWAYS_AUTO_RESIZE)
+        
+        # --- 1. CHỌN HÀM MẤT MÁT VÀ THUẬT TOÁN ---
+        if imgui.collapsing_header("Problem Setup", flags=imgui.TREE_NODE_DEFAULT_OPEN)[0]:
+            imgui.text("Loss Function:")
+            changed_f, new_f_idx = imgui.combo("##FuncSelect", self.state.sgd_selected_func_idx, self.state.sgd_func_names)
+            if changed_f:
+                self.state.sgd_selected_func_idx = new_f_idx
+                self.state.sgd_surface_need_rebuild = True # Kích hoạt vẽ lại đồ thị
+                self.state.sgd_is_playing = False # Dừng mô phỏng khi đổi hàm
+                
+            imgui.text("Algorithm:")
+            changed_a, new_a_idx = imgui.combo("##AlgoSelect", self.state.sgd_algo_idx, self.state.sgd_algorithms)
+            if changed_a:
+                self.state.sgd_algo_idx = new_a_idx
+                
+        imgui.separator()
+        
+        # --- 2. CÁC SIÊU THAM SỐ (HYPERPARAMETERS) ---
+        if imgui.collapsing_header("Hyperparameters", flags=imgui.TREE_NODE_DEFAULT_OPEN)[0]:
+            _, self.state.sgd_learning_rate = imgui.slider_float("Learning Rate", self.state.sgd_learning_rate, 0.0001, 0.5, format="%.4f")
+            
+            # Chỉ hiện Momentum nếu chọn thuật toán có liên quan (ví dụ index 3 là Momentum)
+            if self.state.sgd_algo_idx in [3, 4]: 
+                _, self.state.sgd_momentum = imgui.slider_float("Momentum", self.state.sgd_momentum, 0.0, 0.99, format="%.2f")
+                
+            _, self.state.sgd_epochs = imgui.slider_int("Max Epochs/Steps", self.state.sgd_epochs, 10, 1000)
+            
+        imgui.separator()
+        
+        # --- 3. ĐIỀU KHIỂN MÔ PHỎNG (PLAYBACK CONTROLS) ---
+        if imgui.collapsing_header("Simulation Controls", flags=imgui.TREE_NODE_DEFAULT_OPEN)[0]:
+            # Nút Play / Pause
+            btn_text = "Pause" if self.state.sgd_is_playing else "Play / Resume"
+            if imgui.button(btn_text, width=120):
+                self.state.sgd_is_playing = not self.state.sgd_is_playing
+                
+            imgui.same_line()
+            
+            # Nút Reset
+            if imgui.button("Reset Position", width=120):
+                self.state.sgd_is_playing = False
+                # TODO: Hàm đưa tọa độ điểm về vị trí khởi tạo ban đầu
+                
+            _, self.state.sgd_sim_speed = imgui.slider_float("Sim Speed", self.state.sgd_sim_speed, 0.1, 5.0, format="%.1fx")
+            
         imgui.end()
