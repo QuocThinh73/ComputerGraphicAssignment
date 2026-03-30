@@ -36,8 +36,14 @@ class Viewer:
         glfw.window_hint(glfw.RESIZABLE, False)
         glfw.window_hint(glfw.DEPTH_BITS, 16)
         glfw.window_hint(glfw.DOUBLEBUFFER, True)
+        
+        monitor = glfw.get_primary_monitor()
+        mode = glfw.get_video_mode(monitor)
 
-        self.win = glfw.create_window(self.width, self.height, self.title, None, None)
+        self.width = mode.size.width
+        self.height = mode.size.height
+
+        self.win = glfw.create_window(self.width, self.height, self.title, monitor, None)
         if not self.win:
             raise RuntimeError("Failed to create GLFW window")
 

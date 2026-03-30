@@ -51,11 +51,9 @@ class PrismModel(BaseModel):
         
     def _build_normals(self):
         bottom_normals = np.tile([0.0, -1.0, 0.0], (self.bottom_count, 1))
-        
         top_normals = np.tile([0.0, 1.0, 0.0], (self.top_count, 1))
         
         side_normals = []
-        
         for i in range(self.num_sides):
             angle1 = i * (2.0 * np.pi / self.num_sides)
             angle2 = (i + 1) * (2.0 * np.pi / self.num_sides)
@@ -70,11 +68,16 @@ class PrismModel(BaseModel):
         self.normals = np.vstack((bottom_normals, top_normals, side_normals)).astype(np.float32)
 
     def _build_colors(self):
-        shader_name = self.vert_shader.lower()
-        if 'gouraud' in shader_name or 'phong' in shader_name:
+        if self.render_mode in ["Gouraud", "Phong"]:
             self.colors = np.zeros_like(self.vertices, dtype=np.float32)
-        elif 'flat' in shader_name:
-            self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
+            
+        elif self.render_mode == "Flat":
+            flat_color = getattr(self, 'color', (1.0, 1.0, 1.0))
+            self.colors = np.tile(flat_color, (len(self.vertices), 1)).astype(np.float32)
+            
+        elif self.render_mode == "Texture":
+            self.colors = np.ones_like(self.vertices, dtype=np.float32)
+            
         else:
             bottom_colors = [[1.0, 1.0, 1.0]]
             top_colors = [[1.0, 1.0, 1.0]]
@@ -97,6 +100,36 @@ class PrismModel(BaseModel):
                 
             self.colors = np.array(
                 bottom_colors + top_colors + side_colors,
+                dtype=np.float32
+            )
+
+    def _build_texcoords(self):
+        if self.render_mode == "Texture":
+            bottom_uvs = [[0.5, 0.5]]
+            top_uvs = [[0.5, 0.5]]
+            
+            for i in range(self.num_sides + 1):
+                angle = i * (2.0 * np.pi / self.num_sides)
+                u = 0.5 + 0.5 * np.cos(angle)
+                v = 0.5 + 0.5 * np.sin(angle)
+                bottom_uvs.append([u, v])
+                top_uvs.append([u, v])
+                
+            side_uvs = []
+            for i in range(self.num_sides):
+                u1 = i / self.num_sides
+                u2 = (i + 1) / self.num_sides
+                
+                uv_b1 = [u1, 0.0]
+                uv_t1 = [u1, 1.0]
+                uv_b2 = [u2, 0.0]
+                uv_t2 = [u2, 1.0]
+                
+                side_uvs.extend([uv_b1, uv_t1, uv_b2])
+                side_uvs.extend([uv_b2, uv_t1, uv_t2])
+                
+            self.texcoords = np.array(
+                bottom_uvs + top_uvs + side_uvs,
                 dtype=np.float32
             )
         

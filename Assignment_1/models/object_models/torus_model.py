@@ -2,7 +2,6 @@ import numpy as np
 import OpenGL.GL as GL
 from ..base_model import BaseModel
 
-
 class TorusModel(BaseModel):
     def __init__(self, major_radius, minor_radius, major_segments, minor_segments, **kwargs):
         self.major_radius = major_radius
@@ -14,7 +13,6 @@ class TorusModel(BaseModel):
 
     def _build_vertices(self):
         vertices = []
-        
         for i in range(self.major_segments + 1):
             theta = i * (2.0 * np.pi / self.major_segments)
             cos_theta = np.cos(theta)
@@ -35,7 +33,6 @@ class TorusModel(BaseModel):
 
     def _build_indices(self):
         indices = []
-        
         for i in range(self.major_segments):
             for j in range(self.minor_segments):
                 next_i = i + 1
@@ -52,7 +49,6 @@ class TorusModel(BaseModel):
         
     def _build_normals(self):
         normals = []
-        
         for i in range(self.major_segments + 1):
             theta = i * (2.0 * np.pi / self.major_segments)
             cos_theta = np.cos(theta)
@@ -72,14 +68,18 @@ class TorusModel(BaseModel):
         self.normals = np.array(normals, dtype=np.float32)
 
     def _build_colors(self):
-        shader_name = self.vert_shader.lower()
-        if 'gouraud' in shader_name or 'phong' in shader_name:
+        if self.render_mode in ["Gouraud", "Phong"]:
             self.colors = np.zeros_like(self.vertices, dtype=np.float32)
-        elif 'flat' in shader_name:
-            self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
+            
+        elif self.render_mode == "Flat":
+            flat_color = getattr(self, 'color', (1.0, 1.0, 1.0))
+            self.colors = np.tile(flat_color, (len(self.vertices), 1)).astype(np.float32)
+            
+        elif self.render_mode == "Texture":
+            self.colors = np.ones_like(self.vertices, dtype=np.float32)
+            
         else:
             colors = []
-            
             for i in range(self.major_segments + 1):
                 theta = i * (2.0 * np.pi / self.major_segments)
                 
@@ -93,6 +93,18 @@ class TorusModel(BaseModel):
                     colors.append([r, g, b])
                     
             self.colors = np.array(colors, dtype=np.float32)
+
+    def _build_texcoords(self):
+        if self.render_mode == "Texture":
+            uvs = []
+            for i in range(self.major_segments + 1):
+                u = i / self.major_segments
+                
+                for j in range(self.minor_segments + 1):
+                    v = j / self.minor_segments
+                    uvs.append([u, v])
+                    
+            self.texcoords = np.array(uvs, dtype=np.float32)
 
     def _draw_model(self):
         GL.glDrawElements(GL.GL_TRIANGLES, self.indices.shape[0], GL.GL_UNSIGNED_INT, None)

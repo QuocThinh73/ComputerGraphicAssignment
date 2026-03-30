@@ -12,11 +12,9 @@ class Sphere1Model(BaseModel):
 
     def _build_vertices(self):
         vertices = []
-        
         for i in range(self.stacks):
             phi1 = np.pi * (-0.5 + float(i) / self.stacks)
             phi2 = np.pi * (-0.5 + float(i + 1) / self.stacks)
-            
             for j in range(self.sectors):
                 theta1 = 2.0 * np.pi * float(j) / self.sectors
                 theta2 = 2.0 * np.pi * float(j + 1) / self.sectors
@@ -41,14 +39,35 @@ class Sphere1Model(BaseModel):
         self.normals = (self.vertices / self.radius).astype(np.float32)
 
     def _build_colors(self):
-        shader_name = self.vert_shader.lower()
-        if 'gouraud' in shader_name or 'phong' in shader_name:
+        if self.render_mode in ["Gouraud", "Phong"]:
             self.colors = np.zeros_like(self.vertices, dtype=np.float32)
-        elif 'flat' in shader_name:
-            self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
+            
+        elif self.render_mode == "Flat":
+            flat_color = getattr(self, 'color', (1.0, 1.0, 1.0))
+            self.colors = np.tile(flat_color, (len(self.vertices), 1)).astype(np.float32)
+            
+        elif self.render_mode == "Texture":
+            self.colors = np.ones_like(self.vertices, dtype=np.float32)
+            
         else:
             normalized_pos = self.vertices / self.radius
             self.colors = (normalized_pos + 1.0) / 2.0
+
+    def _build_texcoords(self):
+        if self.render_mode == "Texture":
+            uvs = []
+            for i in range(self.stacks):
+                v1 = float(i) / self.stacks
+                v2 = float(i + 1) / self.stacks
+                for j in range(self.sectors):
+                    u1 = float(j) / self.sectors
+                    u2 = float(j + 1) / self.sectors
+                    
+                    uv1, uv2, uv3, uv4 = [u1, v1], [u2, v1], [u1, v2], [u2, v2]
+                    uvs.extend([uv1, uv2, uv3])
+                    uvs.extend([uv2, uv4, uv3])
+                    
+            self.texcoords = np.array(uvs, dtype=np.float32)
 
     def _draw_model(self):
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, len(self.vertices))
@@ -96,18 +115,30 @@ class Sphere2Model(BaseModel):
         
         self.vertices = np.array(vertices, dtype=np.float32)
         
-    def _build_normals(self):
-        self.normals = (self.vertices / self.radius).astype(np.float32)
-
     def _build_colors(self):
-        shader_name = self.vert_shader.lower()
-        if 'gouraud' in shader_name or 'phong' in shader_name:
+        if self.render_mode in ["Gouraud", "Phong"]:
             self.colors = np.zeros_like(self.vertices, dtype=np.float32)
-        elif 'flat' in shader_name:
-            self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
+            
+        elif self.render_mode == "Flat":
+            flat_color = getattr(self, 'color', (1.0, 1.0, 1.0))
+            self.colors = np.tile(flat_color, (len(self.vertices), 1)).astype(np.float32)
+            
+        elif self.render_mode == "Texture":
+            self.colors = np.ones_like(self.vertices, dtype=np.float32)
+
         else:
             normalized_pos = self.vertices / self.radius
             self.colors = (normalized_pos + 1.0) / 2.0
+
+    def _build_texcoords(self):
+        if self.render_mode == "Texture":
+            uvs = []
+            for v in self.vertices:
+                nx, ny, nz = v[0] / self.radius, v[1] / self.radius, v[2] / self.radius
+                u = 0.5 + np.arctan2(nx, nz) / (2.0 * np.pi)
+                v_coord = 0.5 + np.arcsin(ny) / np.pi
+                uvs.append([u, v_coord])
+            self.texcoords = np.array(uvs, dtype=np.float32)
 
     def _draw_model(self):
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, len(self.vertices))
@@ -164,14 +195,29 @@ class Sphere3Model(BaseModel):
         self.normals = (self.vertices / self.radius).astype(np.float32)
 
     def _build_colors(self):
-        shader_name = self.vert_shader.lower()
-        if 'gouraud' in shader_name or 'phong' in shader_name:
+        if self.render_mode in ["Gouraud", "Phong"]:
             self.colors = np.zeros_like(self.vertices, dtype=np.float32)
-        elif 'flat' in shader_name:
-            self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
+            
+        elif self.render_mode == "Flat":
+            flat_color = getattr(self, 'color', (1.0, 1.0, 1.0))
+            self.colors = np.tile(flat_color, (len(self.vertices), 1)).astype(np.float32)
+            
+        elif self.render_mode == "Texture":
+            self.colors = np.ones_like(self.vertices, dtype=np.float32)
+            
         else:
             normalized_pos = self.vertices / self.radius
             self.colors = (normalized_pos + 1.0) / 2.0
+
+    def _build_texcoords(self):
+        if self.render_mode == "Texture":
+            uvs = []
+            for v in self.vertices:
+                nx, ny, nz = v[0] / self.radius, v[1] / self.radius, v[2] / self.radius
+                u = 0.5 + np.arctan2(nx, nz) / (2.0 * np.pi)
+                v_coord = 0.5 + np.arcsin(ny) / np.pi
+                uvs.append([u, v_coord])
+            self.texcoords = np.array(uvs, dtype=np.float32)
 
     def _draw_model(self):
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, len(self.vertices))

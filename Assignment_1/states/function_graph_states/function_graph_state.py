@@ -1,4 +1,4 @@
-from ..base_state import BaseState, ColorParam, FloatParam, StringParam
+from ..base_state import BaseState, FloatParam, StringParam
 
 
 class FunctionGraphState(BaseState):
@@ -12,5 +12,4 @@ class FunctionGraphState(BaseState):
             "max_y": FloatParam("Max Y", 5.0, 0.0, 20.0),
             "delta_x": FloatParam("Delta X", 0.2, 0.05, 2.0),
             "delta_y": FloatParam("Delta Y", 0.2, 0.05, 2.0),
-            "color": ColorParam("Color", (0.0, 0.0, 1.0))
         }

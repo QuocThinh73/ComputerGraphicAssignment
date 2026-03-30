@@ -39,18 +39,25 @@ class TetrahedronModel(BaseModel):
             v = p2 - p1
             w = p3 - p1
             n = np.cross(v, w)
-            n = n / np.linalg.norm(n)
+            norm_length = np.linalg.norm(n)
+            if norm_length > 0:
+                n = n / norm_length
             
             normals.extend([n, n, n])
             
         self.normals = np.array(normals, dtype=np.float32)
 
     def _build_colors(self):
-        shader_name = self.vert_shader.lower()
-        if 'gouraud' in shader_name or 'phong' in shader_name:
+        if self.render_mode in ["Gouraud", "Phong"]:
             self.colors = np.zeros_like(self.vertices, dtype=np.float32)
-        elif 'flat' in shader_name:
-            self.colors = np.tile(self.color, (len(self.vertices), 1)).astype(np.float32)
+            
+        elif self.render_mode == "Flat":
+            flat_color = getattr(self, 'color', (1.0, 1.0, 1.0))
+            self.colors = np.tile(flat_color, (len(self.vertices), 1)).astype(np.float32)
+            
+        elif self.render_mode == "Texture":
+            self.colors = np.ones_like(self.vertices, dtype=np.float32)
+            
         else:
             c0 = [1.0, 0.0, 0.0]
             c1 = [0.0, 1.0, 0.0]
@@ -64,6 +71,18 @@ class TetrahedronModel(BaseModel):
             colors.extend([c3, c3, c3])
             
             self.colors = np.array(colors, dtype=np.float32)
+
+    def _build_texcoords(self):
+        if self.render_mode == "Texture":
+            uv_triangle = [
+                [0.5, 1.0], # top center
+                [0.0, 0.0], # bottom left
+                [1.0, 0.0]  # bottom right
+            ]
+            
+            uvs = uv_triangle * 4
+            
+            self.texcoords = np.array(uvs, dtype=np.float32)
         
     def _draw_model(self):
         GL.glDrawArrays(GL.GL_TRIANGLES, 0, len(self.vertices))
