@@ -23,6 +23,7 @@ SHAPE_CLASSES = {
     "Sphere1": Sphere1Model,
     "Sphere2": Sphere2Model,
     "Sphere3": Sphere3Model,
+    "ImportedModel": ImportedModel,
     # Function graph
     "FunctionGraph": FunctionGraphModel,
 }

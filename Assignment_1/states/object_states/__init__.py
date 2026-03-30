@@ -6,3 +6,4 @@ from .tetrahedron_state import TetrahedronState
 from .torus_state import TorusState
 from .prism_state import PrismState
 from .sphere_state import Sphere1State, Sphere2State, Sphere3State
+from .imported_state import ImportedState

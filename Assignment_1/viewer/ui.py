@@ -61,7 +61,7 @@ class ViewerUI:
                 
             # 3D
             if imgui.begin_menu("3D"):
-                shapes_3d = ["Cube", "Cone", "TruncatedCone", "Cylinder", "Tetrahedron", "Torus", "Prism", "Sphere1", "Sphere2", "Sphere3"]
+                shapes_3d = ["Cube", "Cone", "TruncatedCone", "Cylinder", "Tetrahedron", "Torus", "Prism", "Sphere1", "Sphere2", "Sphere3", "ImportedModel"]
                 for obj_type in shapes_3d:
                     clicked, _ = imgui.menu_item(obj_type)
                     if clicked:

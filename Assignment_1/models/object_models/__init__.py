@@ -6,3 +6,4 @@ from .tetrahedron_model import TetrahedronModel
 from .torus_model import TorusModel
 from .prism_model import PrismModel
 from .sphere_model import Sphere1Model, Sphere2Model, Sphere3Model
+from .imported_model import ImportedModel

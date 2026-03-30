@@ -34,6 +34,7 @@ class AppState:
             "Sphere1": Sphere1State,
             "Sphere2": Sphere2State,
             "Sphere3": Sphere3State,
+            "ImportedModel": ImportedState,
             # Function graph
             "FunctionGraph": FunctionGraphState
         }

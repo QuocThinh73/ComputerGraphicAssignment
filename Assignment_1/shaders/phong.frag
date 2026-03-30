@@ -20,7 +20,7 @@ out vec4 fragColor;
 
 void main() {
   vec3 N = normalize(normal_interp);
-  vec3 V = normalize(-vertPos); 
+  vec3 V = normalize(-vertPos);
 
   vec3 total_light_contribution = vec3(0.0);
 
@@ -31,14 +31,18 @@ void main() {
       vec3 L = normalize(light_positions[i] - vertPos);
       vec3 R = reflect(-L, N);      
 
-      float specAngle = max(dot(R, V), 0.0);
-      float specular = pow(specAngle, shininess);
-      vec3 g = vec3(max(dot(L, N), 0.0), specular, 1.0);
+      float diff = max(dot(L, N), 0.0);
       
+      float specular = 0.0;
+      if (diff > 0.0) {
+          float specAngle = max(dot(R, V), 0.0);
+          specular = pow(specAngle, shininess);
+      }
+      
+      vec3 g = vec3(diff, specular, 1.0);
       total_light_contribution += matrixCompMult(K_materials, I_lights[i]) * g;
   }
 
   vec3 rgb = 0.5 * total_light_contribution + 0.5 * colorInterp;
-
   fragColor = vec4(rgb, 1.0);
 }

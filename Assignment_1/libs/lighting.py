@@ -100,15 +100,9 @@ class LightingManager:
     def setup_phong(self, 
                     lights: Optional[list[Light]] = None,
                     material: Optional[Material] = None,
-                    mode: int = 1):
-        """
-        Setup Phong lighting uniforms.
+                    mode: int = 1,
+                    view_matrix: Optional[np.ndarray] = None):
         
-        Args:
-            light: Light source (uses default if None)
-            material: Material properties (uses default if None)
-            mode: Rendering mode (default: 1)
-        """
         if lights is None:
             lights = []
             
@@ -128,7 +122,15 @@ class LightingManager:
             l = lights[i]
             I_light = np.array([l.diffuse, l.specular, l.ambient], dtype=np.float32)
             self.uma.upload_uniform_matrix3fv(I_light, f'I_lights[{i}]', False)
-            self.uma.upload_uniform_vector3fv(l.position, f'light_positions[{i}]')
+
+            if view_matrix is not None:
+                pos_world = np.append(l.position, 1.0)
+                pos_cam = view_matrix @ pos_world
+                pos_to_upload = pos_cam[:3] / pos_cam[3]
+            else:
+                pos_to_upload = l.position
+                
+            self.uma.upload_uniform_vector3fv(pos_to_upload.astype(np.float32), f'light_positions[{i}]')
             
             is_on = 1 if getattr(l, 'enabled', True) else 0
             self.uma.upload_uniform_scalar1i(is_on, f'light_enabled[{i}]')
@@ -188,9 +190,10 @@ class LightingManager:
         self.uma.upload_uniform_scalar1i(mode, 'mode')
     
     def setup_gouraud(self,
-                     lights: Optional[list[Light]] = None,
-                     material: Optional[Material] = None,
-                     shininess: float = 100.0):
+                      lights: Optional[list[Light]] = None,
+                      material: Optional[Material] = None,
+                      shininess: float = 100.0,
+                      view_matrix: Optional[np.ndarray] = None):
         
         if lights is None:
             lights = []
@@ -213,7 +216,15 @@ class LightingManager:
             l = lights[i]
             I_light = np.array([l.diffuse, l.specular, l.ambient], dtype=np.float32)
             self.uma.upload_uniform_matrix3fv(I_light, f'I_lights[{i}]', False)
-            self.uma.upload_uniform_vector3fv(l.position, f'light_positions[{i}]')
+            
+            if view_matrix is not None:
+                pos_world = np.append(l.position, 1.0)
+                pos_cam = view_matrix @ pos_world
+                pos_to_upload = pos_cam[:3] / pos_cam[3]
+            else:
+                pos_to_upload = l.position
+                
+            self.uma.upload_uniform_vector3fv(pos_to_upload.astype(np.float32), f'light_positions[{i}]')
             
             is_on = 1 if getattr(l, 'enabled', True) else 0
             self.uma.upload_uniform_scalar1i(is_on, f'light_enabled[{i}]')

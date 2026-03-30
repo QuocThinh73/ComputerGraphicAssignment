@@ -100,7 +100,7 @@ class BaseModel:
             if self.render_mode == "Gouraud":
                 self.lighting.setup_gouraud(lights=lights, material=current_mat, shininess=current_mat.shininess)
             elif self.render_mode == "Phong":
-                self.lighting.setup_phong(lights=lights, material=current_mat, mode=1)
+                self.lighting.setup_phong(lights=lights, material=current_mat, mode=1, view_matrix=view)
         
         self.vao.activate()
         
